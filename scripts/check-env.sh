@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-# ak-dev-toolkit — Environment Validator
+# dev-toolkit — Environment Validator
 # Checks all major developer tools for installation.
 # Usage: bash scripts/check-env.sh
 # ─────────────────────────────────────────────────────────────────────────────
@@ -58,7 +58,7 @@ check_env() {
 
 echo ""
 echo -e "${BOLD}╔════════════════════════════════════════╗${NC}"
-echo -e "${BOLD}║   ak-dev-toolkit — Environment Check   ║${NC}"
+echo -e "${BOLD}║    dev-toolkit — Environment Check     ║${NC}"
 echo -e "${BOLD}╚════════════════════════════════════════╝${NC}"
 echo -e "  Platform: $(uname -s) $(uname -m)"
 echo -e "  Date:     $(date '+%Y-%m-%d %H:%M')"

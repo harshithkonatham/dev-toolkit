@@ -64,7 +64,7 @@ check_tool() { command -v "$1" &>/dev/null; }
 start_time=$(date +%s)
 echo ""
 echo -e "${BLUE}╔══════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║     AK Dev Toolkit Security Pipeline     ║${NC}"
+echo -e "${BLUE}║      Dev Toolkit Security Pipeline       ║${NC}"
 echo -e "${BLUE}╚══════════════════════════════════════════╝${NC}"
 echo ""
 echo "  Scan target: $SCAN_DIR"
