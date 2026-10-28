@@ -46,3 +46,16 @@ logs/
 
 # OS
 Thumbs.db
+
+# Test and scan output
+.coverage
+coverage.xml
+junit.xml
+*.sarif
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.db
+*.db-wal
+*.db-shm
+.local-secrets/

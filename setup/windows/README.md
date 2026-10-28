@@ -37,6 +37,7 @@ winget install Microsoft.WindowsTerminal
 ```
 
 **Recommended settings** (`settings.json`):
+
 - Default profile: Ubuntu
 - Font: JetBrains Mono Nerd Font
 - Startup: maximized

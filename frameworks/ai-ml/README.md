@@ -20,6 +20,7 @@ pip install torch torchvision torchaudio
 ```
 
 **Basic neural network**:
+
 ```python
 import torch
 import torch.nn as nn
@@ -72,6 +73,7 @@ pip install transformers datasets accelerate peft trl tokenizers
 ```
 
 **Load and use a model**:
+
 ```python
 from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
 import torch
@@ -104,6 +106,7 @@ model = AutoModelForCausalLM.from_pretrained(
 ```
 
 **Fine-tune with PEFT/LoRA**:
+
 ```python
 from peft import get_peft_model, LoraConfig, TaskType
 from trl import SFTTrainer, SFTConfig
@@ -155,6 +158,7 @@ pip install langgraph
 ```
 
 **RAG pipeline**:
+
 ```python
 from langchain_anthropic import ChatAnthropic
 from langchain_ollama import OllamaEmbeddings
@@ -186,6 +190,7 @@ result = qa_chain.invoke({"query": "What is the main topic?"})
 ```
 
 **LangGraph agent**:
+
 ```python
 from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
@@ -233,6 +238,7 @@ pip install llama-index-embeddings-ollama llama-index-vector-stores-qdrant
 ```
 
 **Advanced RAG**:
+
 ```python
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, Settings
 from llama_index.llms.anthropic import Anthropic
@@ -278,6 +284,7 @@ pip install scikit-learn pandas numpy matplotlib seaborn
 ```
 
 **Full ML pipeline**:
+
 ```python
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, LabelEncoder

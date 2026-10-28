@@ -44,6 +44,7 @@ Together, they form the backbone of modern observability stacks.
 ```
 
 Key components:
+
 - **Prometheus Server**: Scrapes and stores time-series data
 - **Client Libraries**: Instrument application code (Go, Java, Python, etc.)
 - **Exporters**: Expose metrics from third-party systems (Node Exporter, MySQL Exporter, etc.)
@@ -89,8 +90,9 @@ sudo systemctl enable --now grafana-server
 ### Windows
 
 Download binaries from official release pages:
-- Prometheus: https://prometheus.io/download/
-- Grafana: https://grafana.com/grafana/download?platform=windows
+
+- Prometheus: <https://prometheus.io/download/>
+- Grafana: <https://grafana.com/grafana/download?platform=windows>
 
 Or use `winget`:
 

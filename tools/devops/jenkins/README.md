@@ -362,6 +362,7 @@ pipeline {
 ### Configuring the Library in Jenkins
 
 Go to **Manage Jenkins > System > Global Pipeline Libraries**:
+
 - Name: `my-shared-library`
 - Default version: `main`
 - Source: Git, repository URL

@@ -22,6 +22,7 @@ Updated: April 2026.
 ## 1. AI Coding Assistants
 
 ### Claude Code (Anthropic)
+
 **Best for**: Autonomous coding tasks, agentic workflows, large codebases.
 
 ```bash
@@ -42,6 +43,7 @@ claude mcp serve
 ```
 
 **Key features**:
+
 - Full file system access (read/edit/write)
 - Git-aware context
 - MCP server integration
@@ -49,6 +51,7 @@ claude mcp serve
 - Background agents via SDK
 
 **Config** (`~/.claude/settings.json`):
+
 ```json
 {
   "model": "claude-sonnet-4-6",
@@ -65,6 +68,7 @@ claude mcp serve
 ---
 
 ### Cursor
+
 **Best for**: AI-first IDE, inline code generation, multi-file edits.
 
 ```bash
@@ -77,6 +81,7 @@ cursor .
 ```
 
 **Key settings** (`.cursorrules` in project root):
+
 ```
 You are an expert TypeScript developer.
 Always use async/await over callbacks.
@@ -89,6 +94,7 @@ Use Zod for validation.
 ---
 
 ### GitHub Copilot
+
 **Best for**: IDE inline suggestions, PR reviews, code chat.
 
 ```bash
@@ -108,6 +114,7 @@ gh auth login
 ---
 
 ### Aider
+
 **Best for**: Git-aware AI pair programmer in terminal.
 
 ```bash
@@ -132,6 +139,7 @@ aider --watch-files
 ```
 
 **Config** (`.aider.conf.yml`):
+
 ```yaml
 model: claude-sonnet-4-6
 auto-commits: true
@@ -143,6 +151,7 @@ stream: true
 ---
 
 ### Continue.dev
+
 **Best for**: Open-source Copilot alternative, runs local models.
 
 ```bash
@@ -153,6 +162,7 @@ code --install-extension Continue.continue
 ```
 
 **Config** (`~/.continue/config.json`):
+
 ```json
 {
   "models": [
@@ -179,6 +189,7 @@ code --install-extension Continue.continue
 ---
 
 ### Windsurf (Codeium)
+
 **Best for**: Agentic IDE with Cascade — multi-step task execution.
 
 ```bash
@@ -190,6 +201,7 @@ brew install --cask windsurf
 ---
 
 ### Zed Editor
+
 **Best for**: Fast Rust-based editor with native AI assistant.
 
 ```bash
@@ -204,6 +216,7 @@ brew install zed
 ## 2. Local LLM Runners
 
 ### Ollama — Recommended for Local
+
 **Best for**: Running open-source LLMs locally with simple CLI.
 
 ```bash
@@ -253,6 +266,7 @@ curl http://localhost:11434/v1/chat/completions \
 ---
 
 ### LM Studio
+
 **Best for**: GUI for running local GGUF models, OpenAI-compatible server.
 
 ```bash
@@ -269,6 +283,7 @@ brew install --cask lm-studio
 ---
 
 ### Jan
+
 **Best for**: Privacy-first local AI chat, desktop app.
 
 ```bash
@@ -279,6 +294,7 @@ brew install --cask jan
 ---
 
 ### Open WebUI
+
 **Best for**: Web UI for Ollama and OpenAI, multi-user, RAG built-in.
 
 ```bash
@@ -304,6 +320,7 @@ Access at `http://localhost:3000`
 ---
 
 ### AnythingLLM
+
 **Best for**: Local RAG, multi-user workspace, local AI without cloud.
 
 ```bash
@@ -320,6 +337,7 @@ docker run -d \
 ## 3. AI Agent Frameworks
 
 ### LangChain / LangGraph
+
 **Best for**: Building LLM chains and stateful agent graphs (Python & JS).
 
 ```bash
@@ -330,6 +348,7 @@ npm install langchain @langchain/anthropic @langchain/openai langgraph
 ```
 
 **Python quickstart**:
+
 ```python
 from langchain_anthropic import ChatAnthropic
 from langgraph.graph import StateGraph, END
@@ -341,6 +360,7 @@ response = llm.invoke("Explain LangGraph in one sentence")
 ---
 
 ### LlamaIndex
+
 **Best for**: RAG pipelines, document ingestion, structured queries.
 
 ```bash
@@ -361,6 +381,7 @@ response = query_engine.query("What are the key topics?")
 ---
 
 ### CrewAI
+
 **Best for**: Multi-agent teams with roles, tasks, and workflows.
 
 ```bash
@@ -390,6 +411,7 @@ result = crew.kickoff()
 ---
 
 ### AutoGen (Microsoft)
+
 **Best for**: Multi-agent conversations, code execution, human-in-loop.
 
 ```bash
@@ -407,6 +429,7 @@ user.initiate_chat(assistant, message="Write a Python web scraper")
 ---
 
 ### Claude Agent SDK (Anthropic)
+
 **Best for**: Building production AI agents with Claude, tool use, streaming.
 
 ```bash
@@ -447,6 +470,7 @@ response = client.messages.create(
 ---
 
 ### DSPy
+
 **Best for**: Programmatic prompt optimization, compiling prompts.
 
 ```bash
@@ -456,6 +480,7 @@ pip install dspy-ai
 ---
 
 ### Pydantic AI
+
 **Best for**: Type-safe AI agents in Python, production-grade.
 
 ```bash
@@ -478,6 +503,7 @@ print(result.data.answer)
 ---
 
 ### Mastra (TypeScript)
+
 **Best for**: TypeScript-first agent framework, workflows, memory.
 
 ```bash
@@ -487,6 +513,7 @@ npm install @mastra/core @mastra/memory
 ---
 
 ### Agno (formerly Phidata)
+
 **Best for**: Building AI applications with memory, knowledge, tools.
 
 ```bash
@@ -498,6 +525,7 @@ pip install agno
 ## 4. LLM APIs & SDKs
 
 ### Anthropic (Claude)
+
 ```bash
 pip install anthropic
 export ANTHROPIC_API_KEY=sk-ant-...
@@ -509,6 +537,7 @@ export ANTHROPIC_API_KEY=sk-ant-...
 ```
 
 ### OpenAI
+
 ```bash
 pip install openai
 export OPENAI_API_KEY=sk-...
@@ -520,6 +549,7 @@ export OPENAI_API_KEY=sk-...
 ```
 
 ### Google Gemini
+
 ```bash
 pip install google-generativeai
 export GOOGLE_API_KEY=...
@@ -530,6 +560,7 @@ export GOOGLE_API_KEY=...
 ```
 
 ### Groq (Ultra-fast inference)
+
 ```bash
 pip install groq
 export GROQ_API_KEY=...
@@ -538,18 +569,21 @@ export GROQ_API_KEY=...
 ```
 
 ### Together AI
+
 ```bash
 pip install together
 # Open-source models at scale
 ```
 
 ### Replicate
+
 ```bash
 pip install replicate
 # Run any open-source model via API
 ```
 
 ### LiteLLM — Universal LLM Gateway
+
 ```bash
 pip install litellm
 
@@ -567,6 +601,7 @@ response = litellm.completion(
 ## 5. RAG & Knowledge Tools
 
 ### Chroma (Local Vector DB)
+
 ```bash
 pip install chromadb
 
@@ -579,24 +614,28 @@ results = collection.query(query_texts=["search query"], n_results=2)
 ```
 
 ### Qdrant
+
 ```bash
 docker run -p 6333:6333 qdrant/qdrant
 pip install qdrant-client
 ```
 
 ### Weaviate
+
 ```bash
 docker run -p 8080:8080 semitechnologies/weaviate
 pip install weaviate-client
 ```
 
 ### pgvector (Postgres)
+
 ```bash
 docker run -p 5432:5432 -e POSTGRES_PASSWORD=pass pgvector/pgvector:pg16
 pip install pgvector psycopg2-binary
 ```
 
 ### Pinecone (Cloud)
+
 ```bash
 pip install pinecone-client
 ```
@@ -647,6 +686,7 @@ claude mcp add --transport stdio memory -- \
 ```
 
 ### List and manage servers
+
 ```bash
 claude mcp list
 claude mcp get github
@@ -660,6 +700,7 @@ claude mcp remove github
 ## 7. AI Image & Media Tools
 
 ### ComfyUI (Local Stable Diffusion)
+
 ```bash
 git clone https://github.com/comfyanonymous/ComfyUI
 cd ComfyUI
@@ -669,6 +710,7 @@ python main.py
 ```
 
 ### Automatic1111 WebUI
+
 ```bash
 git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui
 cd stable-diffusion-webui
@@ -676,6 +718,7 @@ cd stable-diffusion-webui
 ```
 
 ### Replicate API (Cloud image gen)
+
 ```bash
 pip install replicate
 import replicate
@@ -687,6 +730,7 @@ output = replicate.run("black-forest-labs/flux-1.1-pro", input={"prompt": "..."}
 ## 8. Observability & Evaluation
 
 ### LangSmith (LangChain tracing)
+
 ```bash
 pip install langsmith
 export LANGCHAIN_TRACING_V2=true
@@ -694,6 +738,7 @@ export LANGCHAIN_API_KEY=...
 ```
 
 ### Langfuse (Open-source LLM observability)
+
 ```bash
 # Docker
 docker compose up -d
@@ -704,12 +749,14 @@ langfuse = Langfuse(public_key="...", secret_key="...", host="...")
 ```
 
 ### Weights & Biases
+
 ```bash
 pip install wandb
 wandb login
 ```
 
 ### Promptfoo (LLM testing)
+
 ```bash
 npm install -g promptfoo
 promptfoo init
@@ -721,6 +768,7 @@ promptfoo eval
 ## 9. Local Setup Configs
 
 ### Environment Variables (`.env`)
+
 ```bash
 # Core AI APIs
 ANTHROPIC_API_KEY=sk-ant-...
@@ -744,6 +792,7 @@ CHROMA_PORT=8000
 ```
 
 ### Python virtual environment setup
+
 ```bash
 python -m venv .venv
 source .venv/bin/activate    # macOS/Linux
@@ -753,6 +802,7 @@ pip install anthropic openai langchain langgraph llama-index crewai pydantic-ai 
 ```
 
 ### Docker Compose — Local AI Stack
+
 ```yaml
 # docker-compose.ai.yml
 version: "3.9"
@@ -813,6 +863,7 @@ docker exec -it <ollama-container-id> ollama pull llama3.3:70b
 ```
 
 ### macOS AI Dev Setup Script
+
 ```bash
 #!/bin/bash
 # Install AI dev essentials

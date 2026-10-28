@@ -20,7 +20,7 @@ Updated: April 2026.
 | [Post-Exploitation](#post-exploitation) | Mimikatz, BloodHound, CrackMapExec, Impacket |
 | [Reverse Engineering](#reverse-engineering) | Ghidra, Radare2, pwndbg, GDB |
 | [Forensics](#digital-forensics) | Volatility, Autopsy, Sleuth Kit, Binwalk |
-| [OSINT](#osint---open-source-intelligence) | Maltego, OSINT Framework, Sherlock, SpiderFoot |
+| [OSINT](#osint--open-source-intelligence) | Maltego, OSINT Framework, Sherlock, SpiderFoot |
 | [CTF Tools](#ctf-tools) | pwntools, CyberChef, stegsolve, StegHide |
 | [Defensive Security](#defensive-security) | OSSEC, Suricata, Fail2Ban, Lynis |
 | [Kali / Parrot](#kali-linux--parrot-os) | Distribution setup |

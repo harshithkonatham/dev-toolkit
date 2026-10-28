@@ -109,6 +109,7 @@ brew install --cask iterm2
 ```
 
 **Recommended iTerm2 settings:**
+
 - Preferences → Profiles → Text → Font: **JetBrains Mono Nerd Font** 14pt
 - Preferences → General → Closing: Confirm "Quit iTerm2"
 - Preferences → Keys → Hotkey: Enable system-wide hotkey (e.g. `⌥Space`)

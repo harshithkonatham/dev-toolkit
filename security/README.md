@@ -19,11 +19,13 @@ A reference guide for security practices, secret management, and compliance stan
 ## 1. GitHub Security Setup
 
 ### Two-Factor Authentication (2FA)
+
 1. GitHub → Settings → Security → Enable 2FA
 2. Use an authenticator app (1Password, Authy, or hardware key)
 3. Save backup codes securely
 
 ### Dependabot Alerts
+
 1. Repository → Settings → Security & analysis
 2. Enable Dependabot alerts
 3. Enable Dependabot security updates
@@ -67,12 +69,14 @@ credentials.json
 ```
 
 ### GitHub Secrets (CI/CD)
+
 ```
 Repository → Settings → Secrets and variables → Actions
 → New repository secret
 ```
 
 Reference in workflow:
+
 ```yaml
 env:
   API_KEY: ${{ secrets.API_KEY }}

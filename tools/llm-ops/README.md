@@ -5,6 +5,7 @@
 ## What is LLM-Ops?
 
 LLM-Ops extends MLOps principles to large language models. It covers:
+
 - **Model serving** — Efficiently serve models with low latency
 - **Prompt management** — Version, test, and deploy prompts like code
 - **Evaluation** — Automated testing of LLM outputs for quality/safety

@@ -22,6 +22,7 @@ cd my-app && npm run dev
 ```
 
 **Project structure**:
+
 ```
 my-app/
 ├── src/
@@ -48,6 +49,7 @@ my-app/
 ```
 
 **tRPC router**:
+
 ```typescript
 // src/server/api/routers/user.ts
 import { z } from "zod"
@@ -76,6 +78,7 @@ export const userRouter = createTRPCRouter({
 ```
 
 **Client usage**:
+
 ```typescript
 // In a React component
 import { api } from "@/trpc/react"
@@ -109,6 +112,7 @@ cd my-app && npm run dev
 ```
 
 **Route with loader + action**:
+
 ```typescript
 // app/routes/users.$id.tsx
 import { json, redirect } from "@remix-run/node"
@@ -163,6 +167,7 @@ cd my-app && npm run dev
 ```
 
 **Route with server load + form actions**:
+
 ```typescript
 // src/routes/users/+page.server.ts
 import type { PageServerLoad, Actions } from './$types'
@@ -221,6 +226,7 @@ cd my-app && npm run dev
 ```
 
 **Server API routes**:
+
 ```typescript
 // server/api/users/index.get.ts
 export default defineEventHandler(async (event) => {
@@ -235,6 +241,7 @@ export default defineEventHandler(async (event) => {
 ```
 
 **Composables (auto-imported)**:
+
 ```vue
 <!-- pages/users.vue -->
 <script setup lang="ts">
@@ -302,6 +309,7 @@ npx create-turbo@latest my-monorepo
 ```
 
 **turbo.json**:
+
 ```json
 {
   "$schema": "https://turbo.build/schema.json",

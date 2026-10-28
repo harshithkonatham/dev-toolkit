@@ -523,6 +523,7 @@ spec:
 1. **Never use the root token in production** - Create specific tokens with minimal policies for each use case. Revoke the root token after initial setup.
 
 2. **Enable audit logging** - Always enable at least one audit device:
+
    ```bash
    vault audit enable file file_path=/vault/logs/audit.log
    ```
@@ -534,6 +535,7 @@ spec:
 5. **Use namespaces for multi-tenancy** (Enterprise) - Isolate teams and environments with Vault namespaces.
 
 6. **Automate unsealing** - Use auto-unseal with a cloud KMS (AWS KMS, GCP CKMS, Azure Key Vault) to avoid manual unsealing.
+
    ```bash
    # In vault config
    seal "awskms" {
@@ -547,11 +549,13 @@ spec:
 8. **Rotate encryption keys regularly** - Use `vault operator rotate` for the master key and rotate transit keys on a schedule.
 
 9. **Use response wrapping** - Wrap sensitive responses so they can only be unwrapped once:
+
    ```bash
    vault kv get -wrap-ttl=5m secret/myapp/config
    ```
 
 10. **Back up Vault data** - Use Raft snapshots for backup:
+
     ```bash
     vault operator raft snapshot save backup.snap
     ```

@@ -28,6 +28,7 @@ eas build --platform android
 ```
 
 **Project structure**:
+
 ```
 my-app/
 ├── app/                    # Expo Router (file-based routing)
@@ -47,6 +48,7 @@ my-app/
 ```
 
 **Expo Router** (file-based navigation):
+
 ```typescript
 // app/(tabs)/_layout.tsx
 import { Tabs } from 'expo-router'
@@ -75,6 +77,7 @@ export default function TabLayout() {
 ```
 
 **`app.json` config**:
+
 ```json
 {
   "expo": {
@@ -176,6 +179,7 @@ flutter run -d emulator  # Android emulator
 ```
 
 **Project structure**:
+
 ```
 my_app/
 ├── lib/
@@ -195,6 +199,7 @@ my_app/
 ```
 
 **`lib/main.dart`**:
+
 ```dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -219,6 +224,7 @@ class MyApp extends StatelessWidget {
 ```
 
 **`pubspec.yaml` dependencies**:
+
 ```yaml
 dependencies:
   flutter:
@@ -256,6 +262,7 @@ dev_dependencies:
 ```
 
 **GoRouter navigation**:
+
 ```dart
 final router = GoRouter(
   routes: [
@@ -276,6 +283,7 @@ final router = GoRouter(
 ```
 
 **Riverpod state management**:
+
 ```dart
 // providers/counter_provider.dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -302,6 +310,7 @@ class CounterWidget extends ConsumerWidget {
 ```
 
 **Build for production**:
+
 ```bash
 # iOS
 flutter build ios --release
@@ -329,6 +338,7 @@ flutter build web --release
 | Shoutem UI | Component library |
 
 **NativeWind setup**:
+
 ```bash
 npm install nativewind tailwindcss
 npx tailwindcss init
@@ -365,6 +375,7 @@ npx tailwindcss init
 ## Push Notifications
 
 ### Expo Notifications
+
 ```bash
 npx expo install expo-notifications
 ```
@@ -384,6 +395,7 @@ async function registerForPush() {
 ```
 
 ### Firebase Cloud Messaging (FCM)
+
 ```bash
 npx expo install @react-native-firebase/app @react-native-firebase/messaging
 ```
@@ -406,16 +418,19 @@ npm install react-native-code-push
 ## Publishing
 
 ### App Store (iOS) via EAS
+
 ```bash
 eas submit --platform ios
 ```
 
 ### Google Play via EAS
+
 ```bash
 eas submit --platform android
 ```
 
 ### Flutter
+
 ```bash
 # Build signed APK/AAB
 flutter build appbundle

@@ -273,7 +273,7 @@ checkov -d ./k8s/ --framework kubernetes
 checkov -f docker-compose.yaml --framework compose
 
 # Output for GitHub Actions
-checkov -d . --output-format sarif --output-file-path . 
+checkov -d . --output-format sarif --output-file-path .
 
 # tfsec — Terraform-specific
 brew install tfsec

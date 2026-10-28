@@ -17,6 +17,7 @@ npm run dev    # http://localhost:3000
 ```
 
 **Project structure (App Router)**:
+
 ```
 app/
 ├── layout.tsx          # Root layout
@@ -36,6 +37,7 @@ next.config.ts
 ```
 
 **Key features in Next.js 15**:
+
 - React 19 support
 - Turbopack stable (10x faster builds)
 - Partial Prerendering (PPR)
@@ -44,6 +46,7 @@ next.config.ts
 - `use cache` directive
 
 **next.config.ts**:
+
 ```typescript
 import type { NextConfig } from 'next'
 
@@ -61,6 +64,7 @@ export default config
 ```
 
 **Common patterns**:
+
 ```typescript
 // Server Component (default)
 export default async function Page() {
@@ -97,6 +101,7 @@ cd my-app && npm install && npm run dev
 ```
 
 **React 19 new features**:
+
 ```typescript
 // use() hook — read promises and context
 import { use, Suspense } from 'react'
@@ -148,6 +153,7 @@ cd my-app && npm install && npm run dev
 ```
 
 **Composition API**:
+
 ```vue
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
@@ -170,6 +176,7 @@ onMounted(() => {
 ```
 
 **Vue 3.5 features**:
+
 - `useTemplateRef()` — reactive template refs
 - `useId()` — unique IDs for SSR
 - Deferred Teleport
@@ -188,6 +195,7 @@ cd my-app && npm install && npm run dev
 ```
 
 **Svelte 5 Runes** (new reactivity system):
+
 ```svelte
 <script>
   // $state — reactive variable
@@ -222,6 +230,7 @@ cd my-site && npm run dev
 ```
 
 **Islands architecture**:
+
 ```astro
 ---
 // .astro file — server by default, zero JS shipped
@@ -241,6 +250,7 @@ import VueWidget from '../components/Widget.vue'
 ```
 
 **Content Collections** (type-safe):
+
 ```typescript
 // src/content/config.ts
 import { defineCollection, z } from 'astro:content'
@@ -269,6 +279,7 @@ cd my-app && ng serve
 ```
 
 **Angular 19 features**:
+
 - Standalone components (no NgModule)
 - Signal-based reactivity
 - Zoneless change detection
@@ -332,6 +343,7 @@ npm create vite@latest my-app -- --template react-ts
 ```
 
 **vite.config.ts**:
+
 ```typescript
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
@@ -366,6 +378,7 @@ export default defineConfig({
 | Nanostores | Any | Framework-agnostic |
 
 **Zustand** (recommended for React):
+
 ```typescript
 import { create } from 'zustand'
 
@@ -386,6 +399,7 @@ function Counter() {
 ```
 
 **TanStack Query** (server state):
+
 ```typescript
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 

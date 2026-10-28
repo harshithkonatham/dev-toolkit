@@ -22,10 +22,12 @@ Terraform is an open-source Infrastructure as Code (IaC) tool created by HashiCo
 ## 2026 Suitability Analysis
 
 ### When to use
+
 - **Multi-Cloud complexity**: Use when managing resources across different providers (AWS + Cloudflare).
 - **Stateful Infrastructure**: Best for long-lived resources like VPCs, Databases, and IAM.
 
 ### Alternatives
+
 - **OpenTofu**: Choose if your organization requires a strictly MPL-licensed open-source engine.
 - **Crossplane**: Consider if you prefer managing infrastructure directly via Kubernetes CRDs (GitOps native).
 
@@ -469,20 +471,25 @@ jobs:
 ## Terraform 1.x Features
 
 - **`moved` blocks** -- Refactor resources without destroying and recreating
+
   ```hcl
   moved {
     from = aws_instance.web
     to   = module.compute.aws_instance.web
   }
   ```
+
 - **`import` blocks** -- Declarative import in configuration (1.5+)
+
   ```hcl
   import {
     to = aws_instance.web
     id = "i-0123456789abcdef0"
   }
   ```
+
 - **`check` blocks** -- Post-apply assertions (1.5+)
+
   ```hcl
   check "health" {
     data "http" "api" {
@@ -494,6 +501,7 @@ jobs:
     }
   }
   ```
+
 - **`terraform test`** -- Native testing framework (1.6+)
 - **Provider-defined functions** (1.8+)
 

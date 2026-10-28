@@ -14,6 +14,7 @@ npx prisma init --datasource-provider postgresql
 ```
 
 **`prisma/schema.prisma`**:
+
 ```prisma
 generator client {
   provider = "prisma-client-js"
@@ -51,6 +52,7 @@ enum Role {
 ```
 
 **Commands**:
+
 ```bash
 npx prisma migrate dev --name init       # create migration + apply
 npx prisma migrate deploy                # apply in production
@@ -61,6 +63,7 @@ npx prisma db seed                       # run seed script
 ```
 
 **Usage**:
+
 ```typescript
 import { PrismaClient } from '@prisma/client'
 
@@ -120,6 +123,7 @@ npm install -D drizzle-kit @types/pg
 ```
 
 **`src/db/schema.ts`**:
+
 ```typescript
 import { pgTable, serial, text, boolean, timestamp, varchar } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
@@ -144,6 +148,7 @@ export const usersRelations = relations(users, ({ many }) => ({
 ```
 
 **`drizzle.config.ts`**:
+
 ```typescript
 import { defineConfig } from 'drizzle-kit'
 
@@ -156,6 +161,7 @@ export default defineConfig({
 ```
 
 **Usage**:
+
 ```typescript
 import { drizzle } from 'drizzle-orm/node-postgres'
 import { Pool } from 'pg'
@@ -205,6 +211,7 @@ pip install sqlalchemy psycopg2-binary
 ```
 
 **Models**:
+
 ```python
 from sqlalchemy import Column, String, Boolean, ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
@@ -237,6 +244,7 @@ class Post(Base):
 ```
 
 **Async with FastAPI**:
+
 ```python
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy import select
@@ -255,6 +263,7 @@ async def get_users(db: AsyncSession = Depends(get_db)):
 ```
 
 **Alembic migrations**:
+
 ```bash
 alembic init alembic
 alembic revision --autogenerate -m "create users table"
@@ -284,6 +293,7 @@ alembic downgrade -1
 ## Serverless Database Setup
 
 ### Neon (PostgreSQL serverless)
+
 ```bash
 # .env
 DATABASE_URL=postgresql://user:pass@ep-xxx.us-east-1.aws.neon.tech/mydb?sslmode=require
@@ -302,6 +312,7 @@ const result = await sql`SELECT * FROM users WHERE id = ${userId}`
 ```
 
 ### Supabase (PostgreSQL + Auth + Storage)
+
 ```bash
 npm install @supabase/supabase-js
 ```
@@ -337,6 +348,7 @@ const { data: { user } } = await supabase.auth.signInWithPassword({
 ```
 
 ### Turso (SQLite at the edge)
+
 ```bash
 npm install @libsql/client
 ```

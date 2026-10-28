@@ -17,6 +17,7 @@ npx tailwindcss init -p
 ```
 
 **Tailwind CSS v4 changes** (CSS-first config):
+
 ```css
 /* app/globals.css — no more tailwind.config.js needed */
 @import "tailwindcss";
@@ -29,6 +30,7 @@ npx tailwindcss init -p
 ```
 
 **Usage**:
+
 ```tsx
 <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
   <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl dark:bg-gray-800">
@@ -44,6 +46,7 @@ npx tailwindcss init -p
 ```
 
 **Tailwind plugins**:
+
 ```bash
 npm install @tailwindcss/forms @tailwindcss/typography @tailwindcss/aspect-ratio
 ```
@@ -72,6 +75,7 @@ npx shadcn@latest add select
 ```
 
 **components.json**:
+
 ```json
 {
   "$schema": "https://ui.shadcn.com/schema.json",
@@ -92,6 +96,7 @@ npx shadcn@latest add select
 ```
 
 **Usage**:
+
 ```tsx
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -311,6 +316,7 @@ npm install @mui/material @emotion/react @emotion/styled @mui/icons-material
 ## CSS Architecture
 
 ### CSS Modules (built into Next.js/Vite)
+
 ```css
 /* Button.module.css */
 .button {
@@ -330,6 +336,7 @@ import styles from './Button.module.css'
 ```
 
 ### CSS Variables for theming
+
 ```css
 :root {
   --color-primary: #3b82f6;

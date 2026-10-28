@@ -493,22 +493,27 @@ ssh_args = -o ControlMaster=auto -o ControlPersist=60s
 1. **Use roles for everything** -- even simple playbooks benefit from the structure
 2. **Name every task** -- makes output readable and debugging easier
 3. **Use `ansible-lint`** -- catch issues before they hit production
+
    ```bash
    pip3 install ansible-lint
    ansible-lint playbooks/
    ```
+
 4. **Keep secrets in Vault** -- never commit plaintext passwords or keys
 5. **Use `--check --diff`** -- preview changes before applying
 6. **Tag your tasks** -- enable selective execution
+
    ```yaml
    tasks:
      - name: Install packages
        apt: name=nginx state=present
        tags: [install, nginx]
    ```
+
    ```bash
    ansible-playbook site.yml --tags install
    ```
+
 7. **Use handlers for service restarts** -- avoids unnecessary restarts
 8. **Pin collection and role versions** in `requirements.yml`
 9. **Avoid `command` and `shell`** when a dedicated module exists
