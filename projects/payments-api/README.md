@@ -145,8 +145,9 @@ Secrets used in CI are random values generated per run, so the repo stores none.
 - **SQLite** keeps the demo self-contained. It's single-writer, so the
   Deployment runs one replica with `Recreate`. Production would use a managed
   database such as Postgres behind the same `Repository` interface.
-- **The event publisher** logs events. A Kafka, SQS or RabbitMQ publisher would
-  implement the one-method `Publisher` protocol in [`events.py`](src/payments_api/events.py).
+- **Events go to the log by default.** Set `EVENT_BROKER=rabbitmq` to publish
+  to RabbitMQ (see above). The Kubernetes manifests keep the default, because
+  the NetworkPolicy blocks all egress; using a broker there needs an egress rule.
 - **HS256 tokens** keep local testing simple. With an external identity
   provider you'd verify RS256/ES256 tokens against its JWKS endpoint instead.
 - **The approve/decline rule** is a placeholder per-currency limit.
