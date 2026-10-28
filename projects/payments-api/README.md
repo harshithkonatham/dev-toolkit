@@ -33,6 +33,51 @@ curl -X POST localhost:8000/v1/transactions \
  "created_at":"2026-10-28T21:41:10Z"}
 ```
 
+## Events and the risk monitor
+
+Each payment writes a `transaction.created` event to an outbox table in the same
+database transaction. A background relay publishes those events to a durable
+RabbitMQ topic exchange. A separate **risk-monitor** service consumes them and
+raises a velocity alert when one customer makes 3+ approved payments within a minute.
+
+```text
+POST /v1/transactions ─► [transactions + outbox]  (one DB transaction)
+                                   │ relay: persistent message, waits for broker confirm
+                                   ▼
+                     exchange payments.events (topic)
+                                   │ transaction.created
+                                   ▼
+                     queue risk-monitor (quorum) ──► risk-monitor service ──► risk_alerts
+                                   │ malformed / rejected
+                                   ▼
+                     payments.dlx ──► risk-monitor.dlq  (kept for inspection)
+```
+
+| Concern | How it's handled | Where |
+|---|---|---|
+| Lost events | The outbox row is marked sent only after RabbitMQ confirms the message. Messages are persistent, and `mandatory` makes the publish fail rather than silently drop when no queue is bound. | [`events.py`](src/payments_api/events.py) |
+| Duplicate delivery | Delivery is at-least-once. The consumer stores each message ID in the same transaction as its effects, so a redelivery changes nothing. | [`consumer.py`](src/payments_api/consumer.py) |
+| Poison messages | Events are validated against a strict schema: unknown fields such as `card_number` are rejected. Bad messages are dead-lettered instead of being retried forever, and are never logged. | [`consumer.py`](src/payments_api/consumer.py) |
+| Broker credentials | `RABBITMQ_URL` is treated as a secret (`RABBITMQ_URL_FILE`, redacted in `repr`). `amqps://` (TLS) is required unless you opt out for local use. | [`config.py`](src/payments_api/config.py) |
+| Broker outage | The API keeps accepting payments, and events wait in the outbox until the broker is back. | [`events.py`](src/payments_api/events.py) |
+
+Run the whole stack locally (API, RabbitMQ, risk monitor):
+
+```bash
+make compose-up                     # http://localhost:8000, RabbitMQ UI on :15672
+TOKEN=$(make -s token)
+for i in 1 2 3; do
+  curl -s -X POST localhost:8000/v1/transactions -H "Authorization: Bearer $TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{"card_number":"4111111111111111","amount":"25.50","currency":"GBP","merchant_id":"coffee-shop"}'
+done
+docker compose logs risk-monitor    # ... "msg": "risk alert", "owner": "alice"
+make compose-down
+```
+
+`make test-rabbitmq` runs the broker integration tests. CI runs them on every
+build against a RabbitMQ service container.
+
 ## Run it
 
 Needs [uv](https://docs.astral.sh/uv/). Docker is optional.
@@ -123,8 +168,9 @@ Secrets used in CI are random values generated per run, so the repo stores none.
 - **SQLite** keeps the demo self-contained. It's single-writer, so the
   Deployment runs one replica with `Recreate`. Production would use a managed
   database such as Postgres behind the same `Repository` interface.
-- **The event publisher** logs events. A Kafka, SQS or RabbitMQ publisher would
-  implement the one-method `Publisher` protocol in [`events.py`](src/payments_api/events.py).
+- **Events go to the log by default.** Set `EVENT_BROKER=rabbitmq` to publish
+  to RabbitMQ (see above). The Kubernetes manifests keep the default, because
+  the NetworkPolicy blocks all egress; using a broker there needs an egress rule.
 - **HS256 tokens** keep local testing simple. With an external identity
   provider you'd verify RS256/ES256 tokens against its JWKS endpoint instead.
 - **The approve/decline rule** is a placeholder per-currency limit.
