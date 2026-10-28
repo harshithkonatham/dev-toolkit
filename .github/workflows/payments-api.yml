@@ -42,6 +42,7 @@ env:
   PYTHON_VERSION: "3.14"
   SEMGREP_VERSION: "1.180.0"
   CHECKOV_VERSION: "3.3.29"
+  TERRAFORM_VERSION: "1.9.8"
   IMAGE: payments-api:dev
   PROMETHEUS_VERSION: "v3.5.0"
 
@@ -167,7 +168,7 @@ jobs:
           uv run --locked pip-audit --disable-pip --strict -r /tmp/requirements.txt
 
   iac:
-    name: IaC scan (Hadolint, Checkov)
+    name: IaC scan (Hadolint, Checkov, Terraform)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -185,6 +186,15 @@ jobs:
         run: uvx checkov@${{ env.CHECKOV_VERSION }} --compact --framework dockerfile -f Dockerfile
       - name: Checkov (Kubernetes manifests)
         run: uvx checkov@${{ env.CHECKOV_VERSION }} --compact --framework kubernetes -d deploy/k8s
+      - name: Terraform fmt and validate (no AWS credentials needed)
+        working-directory: projects/payments-api/deploy/terraform
+        run: |
+          tf() { docker run --rm -v "$PWD:/w" -w /w "hashicorp/terraform:${TERRAFORM_VERSION}" "$@"; }
+          tf fmt -check -recursive -diff
+          tf init -backend=false -input=false
+          tf validate
+      - name: Checkov (Terraform)
+        run: uvx checkov@${{ env.CHECKOV_VERSION }} --compact --framework terraform -d deploy/terraform
 
   image:
     name: Build, scan and test container

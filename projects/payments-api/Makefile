@@ -28,6 +28,7 @@ scan: ## Bandit, Semgrep, pip-audit, Checkov
 	$(UV_RUN) pip-audit --disable-pip --strict -r /tmp/payments-api-requirements.txt
 	uvx checkov@3.3.29 --compact --quiet --framework dockerfile -f Dockerfile
 	uvx checkov@3.3.29 --compact --quiet --framework kubernetes -d deploy/k8s
+	uvx checkov@3.3.29 --compact --quiet --framework terraform -d deploy/terraform
 
 check: lint test scan ## Everything CI runs before building the image
 
