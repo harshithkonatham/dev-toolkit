@@ -12,13 +12,10 @@
 
 name: payments-api
 
+# Runs on every branch push that touches this project; PRs from this repo show
+# those same checks, so there is no separate pull_request trigger.
 on:
   push:
-    branches: [main]
-    paths:
-      - "projects/payments-api/**"
-      - ".github/workflows/payments-api.yml"
-  pull_request:
     paths:
       - "projects/payments-api/**"
       - ".github/workflows/payments-api.yml"
@@ -49,6 +46,18 @@ jobs:
     name: Lint, type-check and test
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    services:
+      # Real broker for the messaging integration tests (tests/integration/test_rabbitmq.py).
+      rabbitmq:
+        image: rabbitmq:4.1-alpine
+        env:
+          RABBITMQ_DEFAULT_USER: payments
+          RABBITMQ_DEFAULT_PASS: payments-ci-only # gitleaks:allow (throwaway CI broker)
+        ports:
+          - 5672:5672
+        options: >-
+          --health-cmd "rabbitmq-diagnostics -q check_port_connectivity"
+          --health-interval 5s --health-timeout 5s --health-retries 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -67,7 +76,9 @@ jobs:
         run: uv run ruff format --check .
       - name: Mypy (strict)
         run: uv run mypy
-      - name: Unit and integration tests (coverage gate 90%)
+      - name: Unit and integration tests, incl. real RabbitMQ (coverage gate 90%)
+        env:
+          RABBITMQ_URL: amqp://payments:payments-ci-only@localhost:5672/%2F
         run: >-
           uv run pytest --cov --cov-report=xml --cov-report=term
           --cov-fail-under=90 --junitxml=junit.xml
