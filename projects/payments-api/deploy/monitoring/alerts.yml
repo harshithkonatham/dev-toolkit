@@ -1,0 +1,66 @@
+# Alerts for the payments API. Each one links to a section of RUNBOOK.md.
+# Unit-tested with promtool (alerts.test.yml); CI runs those tests.
+groups:
+  - name: payments-api.slo
+    rules:
+      # Recording rules keep the alert expressions short and cheap to evaluate.
+      - record: payments:http_requests:rate5m
+        expr: sum(rate(http_requests_total[5m]))
+      - record: payments:http_5xx:ratio5m
+        expr: |
+          sum(rate(http_requests_total{status=~"5.."}[5m]))
+            / clamp_min(sum(rate(http_requests_total[5m])), 1e-9)
+      - record: payments:create_latency:p95_5m
+        expr: |
+          histogram_quantile(0.95,
+            sum by (le) (rate(http_request_duration_seconds_bucket{method="POST", route="/v1/transactions"}[5m])))
+      - record: payments:decline:ratio15m
+        expr: |
+          sum(rate(transactions_created_total{status="declined"}[15m]))
+            / clamp_min(sum(rate(transactions_created_total[15m])), 1e-9)
+
+      - alert: PaymentsApiDown
+        expr: up{job="payments-api"} == 0
+        for: 2m
+        labels:
+          severity: page
+        annotations:
+          summary: "Payments API target {{ $labels.instance }} is down"
+          runbook_url: "https://github.com/harshithkonatham/dev-toolkit/blob/main/projects/payments-api/deploy/monitoring/RUNBOOK.md#paymentsapidown"
+
+      - alert: PaymentsHighErrorRate
+        expr: payments:http_5xx:ratio5m > 0.02 and payments:http_requests:rate5m > 0.1
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: "{{ $value | humanizePercentage }} of payment API requests are failing (5xx)"
+          runbook_url: "https://github.com/harshithkonatham/dev-toolkit/blob/main/projects/payments-api/deploy/monitoring/RUNBOOK.md#paymentshigherrorrate"
+
+      - alert: PaymentsSlowCreate
+        expr: payments:create_latency:p95_5m > 0.5
+        for: 10m
+        labels:
+          severity: ticket
+        annotations:
+          summary: "p95 latency for creating a payment is {{ $value | humanizeDuration }}"
+          runbook_url: "https://github.com/harshithkonatham/dev-toolkit/blob/main/projects/payments-api/deploy/monitoring/RUNBOOK.md#paymentsslowcreate"
+
+      - alert: PaymentsDeclineSpike
+        expr: payments:decline:ratio15m > 0.25 and sum(rate(transactions_created_total[15m])) > 0.05
+        for: 15m
+        labels:
+          severity: ticket
+        annotations:
+          summary: "{{ $value | humanizePercentage }} of payments are being declined"
+          runbook_url: "https://github.com/harshithkonatham/dev-toolkit/blob/main/projects/payments-api/deploy/monitoring/RUNBOOK.md#paymentsdeclinespike"
+
+      - alert: PaymentsAuthFailures
+        expr: sum(rate(http_requests_total{status=~"401|403"}[5m])) > 1
+        for: 10m
+        labels:
+          severity: ticket
+          category: security
+        annotations:
+          summary: "Sustained 401/403 responses ({{ $value | printf \"%.1f\" }}/s): possible credential stuffing or a broken client"
+          runbook_url: "https://github.com/harshithkonatham/dev-toolkit/blob/main/projects/payments-api/deploy/monitoring/RUNBOOK.md#paymentsauthfailures"
