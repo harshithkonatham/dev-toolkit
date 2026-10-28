@@ -26,9 +26,7 @@ dev = [
 [tool.uv]
 # The app runs from src/ and is not installed as a package.
 package = false
-# Supply-chain cooldown: ignore releases newer than this date when locking.
-# Bump it deliberately when refreshing dependencies.
-exclude-newer = "2026-10-14T00:00:00Z"
+# Supply-chain cooldown is handled by Dependabot (7 days, .github/dependabot.yml).
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

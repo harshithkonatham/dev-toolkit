@@ -30,7 +30,7 @@ class RecordingPublisher:
 @pytest.fixture
 def settings(tmp_path: Any) -> Settings:
     return Settings(
-        jwt_secret="test-jwt-secret-that-is-long-enough-1234",
+        jwt_secret="test-jwt-secret-that-is-long-enough-1234",  # gitleaks:allow (test fixture)
         pan_hmac_key=b"test-pan-hmac-key-that-is-long-enough-1234",
         database_path=str(tmp_path / "payments.db"),
         outbox_relay_interval=0,
