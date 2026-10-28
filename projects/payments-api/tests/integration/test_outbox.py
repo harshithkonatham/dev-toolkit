@@ -22,7 +22,7 @@ def test_each_transaction_emits_one_event_without_card_data(
     payment: Payment,
     publisher: RecordingPublisher,
 ) -> None:
-    headers = {**auth(), "Idempotency-Key": "order-12345678"}
+    headers = {**auth(), "Idempotency-Key": "order-12345678"}  # gitleaks:allow (test fixture)
     txn = client.post("/v1/transactions", json=payment(), headers=headers).json()
     client.post("/v1/transactions", json=payment(), headers=headers)  # replay: no new event
 
