@@ -3,7 +3,7 @@ description: "DevOps & Developer Toolkit Documentation Standards - Ensure compre
 applyTo: "**/*.md"
 ---
 
-# ak-dev-toolkit Documentation Standards
+# dev-toolkit Documentation Standards
 
 ## Core Principles
 
