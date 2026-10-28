@@ -1,0 +1,63 @@
+[project]
+name = "payments-api"
+version = "0.1.0"
+description = "A small card-transactions API built to demonstrate a secure SDLC and DevSecOps pipeline."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn>=0.32",
+    "pydantic>=2.9",
+    "pyjwt>=2.10",
+    "prometheus-client>=0.21",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-cov>=6.0",
+    "httpx>=0.28",
+    "ruff>=0.8",
+    "mypy>=1.13",
+    "bandit>=1.8",
+    "pip-audit>=2.7",
+]
+
+[tool.uv]
+# The app runs from src/ and is not installed as a package.
+package = false
+# Supply-chain cooldown: ignore releases newer than this date when locking.
+# Bump it deliberately when refreshing dependencies.
+exclude-newer = "2026-10-14T00:00:00Z"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = ["e2e: runs against a deployed instance (needs BASE_URL)"]
+
+[tool.coverage.run]
+source = ["src/payments_api"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_also = ["if __name__ == .__main__.:"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "SIM", "RUF", "N", "PT"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests use assert and hard-coded throwaway secrets by design.
+"tests/**" = ["S101", "S105", "S106"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+mypy_path = "src"
+packages = ["payments_api"]
