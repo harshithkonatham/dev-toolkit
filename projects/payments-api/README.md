@@ -106,3 +106,9 @@ Secrets used in CI are random values generated per run, so the repo stores none.
   provider you'd verify RS256/ES256 tokens against its JWKS endpoint instead.
 - **The approve/decline rule** is a placeholder per-currency limit.
 - **Data is in an `emptyDir`**, so it's lost when the pod restarts.
+
+## Compliance
+
+[`docs/pci-dss.md`](docs/pci-dss.md) maps PCI DSS v4.0 requirements (1–4, 6–8,
+10–12) to the controls above, with a file, test or CI job as evidence for each,
+and lists the known gaps.
