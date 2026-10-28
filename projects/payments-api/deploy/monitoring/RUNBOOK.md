@@ -6,7 +6,7 @@ to its section here.
 **Severity:** `page` means act now (customers can't pay). `ticket` means look
 at it during working hours.
 
-**First five minutes, for any alert**
+## First five minutes, for any alert
 
 1. Open the **Payments API** dashboard in Grafana and note when the change started.
 2. Check what changed around then: deploys (`kubectl -n payments rollout history deployment/payments-api`), config, dependencies.
@@ -92,20 +92,19 @@ Blameless: describe what the system allowed to happen, not who did it.
 
 Found while building this stack. It shows how the template is used.
 
-**Impact:** Local only. No metrics or alerts for the first run of the stack.
-**Detection:** Manual. Grafana loaded, but the queries returned nothing.
-**Timeline:** compose up → Grafana empty after ~2 min → `docker compose ps`
-showed Prometheus `Exited (2)` → fixed and verified in ~5 min.
-**Root cause:**
-1. Why no data? Prometheus wasn't running.
-2. Why? It panicked: `Unable to create mmap-ed active query log`.
-3. Why? It couldn't write to `/prometheus`.
-4. Why? Hardening made the container read-only, with a `tmpfs` at
-   `/prometheus`. The tmpfs was owned by root, but the image runs as `nobody` (65534).
-5. Why wasn't it caught? Config validation (`promtool check config`) doesn't
-   start the server, so permissions aren't tested.
-
-**Fix:** mount the tmpfs with `uid=65534,gid=65534` and set `--storage.tsdb.path`
-explicitly ([`compose.yaml`](compose.yaml)).
-**Actions:** when hardening a third-party image, check which user it runs as
-(`docker inspect --format '{{.Config.User}}'`) before mounting writable paths.
+- **Impact:** Local only. No metrics or alerts for the first run of the stack.
+- **Detection:** Manual. Grafana loaded, but the queries returned nothing.
+- **Timeline:** compose up → Grafana empty after ~2 min → `docker compose ps`
+  showed Prometheus `Exited (2)` → fixed and verified in ~5 min.
+- **Root cause (5 whys):**
+  1. Why no data? Prometheus wasn't running.
+  2. Why? It panicked: `Unable to create mmap-ed active query log`.
+  3. Why? It couldn't write to `/prometheus`.
+  4. Why? Hardening made the container read-only, with a `tmpfs` at
+     `/prometheus`. The tmpfs was owned by root, but the image runs as `nobody` (65534).
+  5. Why wasn't it caught? Config validation (`promtool check config`) doesn't
+     start the server, so permissions aren't tested.
+- **Fix:** mount the tmpfs with `uid=65534,gid=65534` and set `--storage.tsdb.path`
+  explicitly ([`compose.yaml`](compose.yaml)).
+- **Actions:** when hardening a third-party image, check which user it runs as
+  (`docker inspect --format '{{.Config.User}}'`) before mounting writable paths.
