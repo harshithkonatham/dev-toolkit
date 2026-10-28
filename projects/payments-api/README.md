@@ -63,6 +63,29 @@ With Docker: `make docker-build docker-run`.
 | Supply chain | `uv.lock` with hashes and a wheels-only install. Base images pinned by digest, Actions pinned by commit SHA. SBOM generated on every build. Dependabot proposes updates only after a release is 7 days old. | [`pyproject.toml`](pyproject.toml), [`Dockerfile`](Dockerfile), [workflow](../../.github/workflows/payments-api.yml) |
 | Container and cluster | Non-root user (UID 10001), read-only root filesystem, all capabilities dropped, seccomp `RuntimeDefault`, no service-account token, restricted Pod Security Standard, default-deny NetworkPolicy. | [`deploy/k8s`](deploy/k8s) |
 
+## Monitoring
+
+[`deploy/monitoring`](deploy/monitoring) has Prometheus alert rules, a Grafana
+dashboard and a [runbook](deploy/monitoring/RUNBOOK.md) with a section for each alert.
+
+| Alert | Fires when | Severity |
+|---|---|---|
+| `PaymentsApiDown` | Scrape target down for 2 min | page |
+| `PaymentsHighErrorRate` | 5xx above 2% for 5 min (with real traffic) | page |
+| `PaymentsSlowCreate` | p95 for creating a payment above 500 ms for 10 min | ticket |
+| `PaymentsDeclineSpike` | More than 25% declined over 15 min | ticket |
+| `PaymentsAuthFailures` | Sustained 401/403 above 1/s for 10 min | ticket (security) |
+
+Every alert has a promtool unit test ([`alerts.test.yml`](deploy/monitoring/alerts.test.yml)),
+covering both "fires when it should" and "stays quiet at low traffic". CI runs
+them, and the deploy job waits for them.
+
+```bash
+make run              # API on :8000
+make monitoring-up    # Grafana on http://localhost:3000 (Payments folder), Prometheus on :9090
+make test-alerts      # alert unit tests
+```
+
 ## Pipeline
 
 [`.github/workflows/payments-api.yml`](../../.github/workflows/payments-api.yml)
