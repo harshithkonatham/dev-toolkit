@@ -31,6 +31,17 @@ scan: ## Bandit, Semgrep, pip-audit, Checkov
 
 check: lint test scan ## Everything CI runs before building the image
 
+.PHONY: monitoring-up monitoring-down test-alerts
+monitoring-up: ## Start Prometheus (:9090) and Grafana (:3000) for an API on :8000
+	docker compose -f deploy/monitoring/compose.yaml up -d
+
+monitoring-down: ## Stop Prometheus and Grafana
+	docker compose -f deploy/monitoring/compose.yaml down -v
+
+test-alerts: ## Unit-test the Prometheus alert rules
+	docker run --rm -v "$(CURDIR)/deploy/monitoring:/etc/prometheus" -w /etc/prometheus \
+		--entrypoint promtool prom/prometheus:v3.5.0 test rules alerts.test.yml
+
 $(SECRET_DIR):
 	@mkdir -p $(SECRET_DIR) && chmod 700 $(SECRET_DIR)
 	@openssl rand -hex 32 > $(SECRET_DIR)/jwt
