@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payments-api
+  namespace: payments
+  labels:
+    app.kubernetes.io/name: payments-api
+  annotations:
+    # Justified Checkov exceptions for this demo:
+    checkov.io/skip1: CKV_K8S_43=Image is built and loaded locally in CI (kind), so it has no registry digest. A real deployment would pin the pushed digest.
+    checkov.io/skip2: CKV_K8S_15=IfNotPresent is required to use the locally loaded image in kind.
+spec:
+  # One replica: SQLite is a single-writer, local database. Swap in a managed
+  # database (e.g. Postgres) before scaling out.
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: payments-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: payments-api
+    spec:
+      serviceAccountName: payments-api
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: api
+          image: payments-api:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+          env:
+            # Secrets are mounted as files, not env vars, so they don't show up
+            # in `kubectl describe` or process listings.
+            - name: JWT_SECRET_FILE
+              value: /run/secrets/payments/jwt-secret
+            - name: PAN_HMAC_KEY_FILE
+              value: /run/secrets/payments/pan-hmac-key
+            - name: DATABASE_PATH
+              value: /data/payments.db
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            privileged: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 2
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            periodSeconds: 5
+          volumeMounts:
+            - name: secrets
+              mountPath: /run/secrets/payments
+              readOnly: true
+            - name: data
+              mountPath: /data
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: secrets
+          secret:
+            secretName: payments-api-secrets
+            defaultMode: 0400
+        # Demo only: data is lost when the pod restarts. Use a PVC or managed DB.
+        - name: data
+          emptyDir:
+            sizeLimit: 256Mi
+        - name: tmp
+          emptyDir:
+            sizeLimit: 64Mi

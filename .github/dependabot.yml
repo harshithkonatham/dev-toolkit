@@ -1,0 +1,30 @@
+# Weekly update PRs for actions, Python dependencies and the base image.
+# The cooldown waits a few days after a release before proposing it.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: uv
+    directory: /projects/payments-api
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      python-minor-and-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: docker
+    directory: /projects/payments-api
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
