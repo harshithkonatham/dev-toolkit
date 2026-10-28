@@ -1,0 +1,48 @@
+# Local Prometheus + Grafana for the payments API.
+#
+#   make run                                       # API on :8000 (from projects/payments-api)
+#   docker compose -f deploy/monitoring/compose.yaml up -d
+#   open http://localhost:3000                      # Grafana, "Payments" folder
+#   open http://localhost:9090/alerts               # Prometheus alerts
+#
+# Both are bound to 127.0.0.1 only. Grafana allows anonymous read-only viewing
+# for local use; a shared deployment would use SSO instead.
+
+name: payments-monitoring
+
+services:
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=7d
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./alerts.yml:/etc/prometheus/alerts.yml:ro
+    ports:
+      - "127.0.0.1:9090:9090"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    read_only: true
+    tmpfs: ["/prometheus:uid=65534,gid=65534"] # image runs as nobody
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+
+  grafana:
+    image: grafana/grafana:12.0.2
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/payments-api.json
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on: [prometheus]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
