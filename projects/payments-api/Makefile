@@ -1,4 +1,4 @@
-.PHONY: help install lint test e2e scan check run token docker-build docker-run
+.PHONY: help install lint test test-rabbitmq e2e scan check run token docker-build docker-run compose-up compose-down
 
 UV_RUN := uv run --locked
 IMAGE  := payments-api:dev
@@ -18,6 +18,10 @@ lint: ## Ruff lint + format check, strict mypy
 test: ## Unit and integration tests with coverage gate
 	$(UV_RUN) pytest --cov --cov-fail-under=90
 
+test-rabbitmq: ## Integration tests against a real broker (starts one with Docker Compose)
+	docker compose up -d --wait rabbitmq
+	RABBITMQ_URL='amqp://payments:payments-local-only@localhost:5672/%2F' $(UV_RUN) pytest -m rabbitmq -v
+
 e2e: ## E2E tests against BASE_URL (default: local run)
 	BASE_URL=$${BASE_URL:-http://localhost:8000} JWT_SECRET=$$(cat $(SECRET_DIR)/jwt) $(UV_RUN) pytest tests/e2e -v
 
@@ -35,6 +39,7 @@ $(SECRET_DIR):
 	@mkdir -p $(SECRET_DIR) && chmod 700 $(SECRET_DIR)
 	@openssl rand -hex 32 > $(SECRET_DIR)/jwt
 	@openssl rand -hex 32 > $(SECRET_DIR)/pan
+	@echo 'amqp://payments:payments-local-only@rabbitmq:5672/%2F' > $(SECRET_DIR)/rabbitmq_url
 	@echo "Generated throwaway secrets in $(SECRET_DIR)/"
 
 run: $(SECRET_DIR) ## Run the API locally on :8000
@@ -53,3 +58,10 @@ docker-run: $(SECRET_DIR) ## Run the image with the same hardening as CI
 	docker run --rm -p 8000:8000 --read-only --tmpfs /tmp \
 		--tmpfs /data:rw,uid=10001,gid=10001 --cap-drop ALL --security-opt no-new-privileges \
 		-e JWT_SECRET="$$(cat $(SECRET_DIR)/jwt)" -e PAN_HMAC_KEY="$$(cat $(SECRET_DIR)/pan)" $(IMAGE)
+
+compose-up: $(SECRET_DIR) ## Start API + RabbitMQ + risk monitor (http://localhost:8000)
+	docker compose up -d --build --wait rabbitmq api
+	docker compose up -d risk-monitor
+
+compose-down: ## Stop the local stack
+	docker compose down -v
