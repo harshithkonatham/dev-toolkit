@@ -90,7 +90,7 @@ def test_missing_scope_is_403(client: TestClient, auth: Auth, payment: Payment) 
 def test_idempotent_retry_returns_the_original(
     client: TestClient, auth: Auth, payment: Payment
 ) -> None:
-    headers = {**auth(), "Idempotency-Key": "order-12345678"}
+    headers = {**auth(), "Idempotency-Key": "order-12345678"}  # gitleaks:allow (test fixture)
     first = client.post("/v1/transactions", json=payment(), headers=headers)
     retry = client.post("/v1/transactions", json=payment(), headers=headers)
 
@@ -104,7 +104,7 @@ def test_idempotent_retry_returns_the_original(
 def test_reusing_a_key_with_a_different_body_is_409(
     client: TestClient, auth: Auth, payment: Payment
 ) -> None:
-    headers = {**auth(), "Idempotency-Key": "order-12345678"}
+    headers = {**auth(), "Idempotency-Key": "order-12345678"}  # gitleaks:allow (test fixture)
     client.post("/v1/transactions", json=payment(), headers=headers)
     conflict = client.post("/v1/transactions", json=payment(amount="99.00"), headers=headers)
     assert conflict.status_code == 409
