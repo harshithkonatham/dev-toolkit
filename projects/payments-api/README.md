@@ -60,7 +60,7 @@ With Docker: `make docker-build docker-run`.
 | Secret leakage | No default secrets: the app won't start without them. They're read from mounted files in Kubernetes, and `repr()` redacts them. Gitleaks scans the full git history. | [`config.py`](src/payments_api/config.py) |
 | Resource abuse | 16 KB body limit enforced before parsing (including chunked bodies), plus bounded page sizes. | [`observability.py`](src/payments_api/observability.py) |
 | Browser-side attacks | `no-store`, a strict CSP, HSTS, `nosniff` and `DENY` framing on every response. API docs are off by default. | [`observability.py`](src/payments_api/observability.py) |
-| Supply chain | `uv.lock` with hashes, wheels-only install, and a 14-day cooldown on new releases. Base images pinned by digest, Actions pinned by commit SHA. SBOM generated on every build. Dependabot updates with a cooldown. | [`pyproject.toml`](pyproject.toml), [`Dockerfile`](Dockerfile), [workflow](../../.github/workflows/payments-api.yml) |
+| Supply chain | `uv.lock` with hashes and a wheels-only install. Base images pinned by digest, Actions pinned by commit SHA. SBOM generated on every build. Dependabot proposes updates only after a release is 7 days old. | [`pyproject.toml`](pyproject.toml), [`Dockerfile`](Dockerfile), [workflow](../../.github/workflows/payments-api.yml) |
 | Container and cluster | Non-root user (UID 10001), read-only root filesystem, all capabilities dropped, seccomp `RuntimeDefault`, no service-account token, restricted Pod Security Standard, default-deny NetworkPolicy. | [`deploy/k8s`](deploy/k8s) |
 
 ## Pipeline
