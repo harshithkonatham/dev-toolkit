@@ -1,0 +1,75 @@
+# Local stack: API + RabbitMQ + risk-monitor consumer.
+#
+#   make compose-up      # generates throwaway secrets, builds and starts everything
+#   make token           # get an access token, then POST payments to :8000
+#   docker compose logs -f risk-monitor
+#
+# Credentials here are for local use only. Real deployments use amqps:// with
+# per-service users and secrets from a secret manager.
+
+name: payments
+
+x-hardening: &hardening
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  tmpfs: ["/tmp", "/data:uid=10001,gid=10001"]
+
+services:
+  rabbitmq:
+    image: rabbitmq:4.1-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: payments
+      RABBITMQ_DEFAULT_PASS: payments-local-only # gitleaks:allow (local-only credential)
+    ports:
+      - "127.0.0.1:5672:5672"
+      - "127.0.0.1:15672:15672" # management UI
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_port_connectivity"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build: .
+    image: payments-api:dev
+    <<: *hardening
+    environment:
+      JWT_SECRET_FILE: /run/secrets/jwt
+      PAN_HMAC_KEY_FILE: /run/secrets/pan
+      EVENT_BROKER: rabbitmq
+      RABBITMQ_URL_FILE: /run/secrets/rabbitmq_url
+      RABBITMQ_ALLOW_PLAINTEXT: "true" # broker is on the local Docker network
+      OUTBOX_RELAY_INTERVAL: "1"
+    secrets: [jwt, pan, rabbitmq_url]
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  risk-monitor:
+    image: payments-api:dev
+    <<: *hardening
+    entrypoint: ["python", "-m", "payments_api.consumer"]
+    healthcheck:
+      disable: true # no HTTP port; the image's API health check does not apply
+    environment:
+      RABBITMQ_URL_FILE: /run/secrets/rabbitmq_url
+      RABBITMQ_ALLOW_PLAINTEXT: "true"
+      RISK_DATABASE_PATH: /data/risk.db
+    secrets: [rabbitmq_url]
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      api:
+        condition: service_started
+    restart: on-failure
+
+secrets:
+  jwt:
+    file: .local-secrets/jwt
+  pan:
+    file: .local-secrets/pan
+  rabbitmq_url:
+    file: .local-secrets/rabbitmq_url
