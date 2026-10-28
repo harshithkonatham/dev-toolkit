@@ -80,7 +80,7 @@ sudo systemctl enable --now kibana
 
 ### Windows
 
-Download MSI installers or ZIP archives from https://www.elastic.co/downloads/.
+Download MSI installers or ZIP archives from <https://www.elastic.co/downloads/>.
 
 ---
 

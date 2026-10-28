@@ -3,6 +3,24 @@
 A consolidated repository containing development tools, setup guides, frameworks, Dockerfiles, and learning resources.
 Updated: April 2026.
 
+[![Toolkit CI](https://github.com/harshithkonatham/dev-toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/harshithkonatham/dev-toolkit/actions/workflows/ci.yml)
+[![payments-api](https://github.com/harshithkonatham/dev-toolkit/actions/workflows/payments-api.yml/badge.svg)](https://github.com/harshithkonatham/dev-toolkit/actions/workflows/payments-api.yml)
+
+## Featured: Payments API (DevSecOps reference project)
+
+[`projects/payments-api`](projects/payments-api) is a small card-transactions
+service that puts the practices in [`tools/devsecops`](tools/devsecops) into
+working code:
+
+- **Secure by design:** card numbers never stored or logged, pinned-algorithm
+  JWT auth, per-user authorization, idempotent payments, transactional outbox
+- **Tested at three levels:** unit, integration and end-to-end, with a 90%
+  coverage gate
+- **Security gates in CI:** Bandit, Semgrep, CodeQL, Gitleaks, pip-audit,
+  Hadolint, Checkov and Grype, plus an SBOM for every build
+- **Shipped like production:** hardened non-root container, deployed to a
+  Kubernetes (kind) cluster in CI and smoke-tested there
+
 ## Repository Taxonomy
 
 | Directory | Description |
@@ -15,7 +33,7 @@ Updated: April 2026.
 | **`containers/`** | Dockerfiles, Compose files, and Registry configurations |
 | **`networking/`** | Networking tools, tunneling, proxies, and cybersecurity |
 | **`security/`** | Security, Compliance, and Secret Management standards |
-| **`projects/`** | Demo projects and sandbox environments |
+| **`projects/`** | Demo projects, including the [Payments API](projects/payments-api) DevSecOps reference |
 
 ## Frameworks Quick Reference
 

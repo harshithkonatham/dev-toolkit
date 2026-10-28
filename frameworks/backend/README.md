@@ -16,6 +16,7 @@ mkdir my-api && cd my-api
 ```
 
 **Full project structure**:
+
 ```
 my-api/
 ├── app/
@@ -39,6 +40,7 @@ my-api/
 ```
 
 **`app/main.py`**:
+
 ```python
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -67,6 +69,7 @@ def health():
 ```
 
 **Router with dependencies**:
+
 ```python
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -93,6 +96,7 @@ async def create_user(user: UserCreate, db: Session = Depends(get_db)):
 ```
 
 **Run**:
+
 ```bash
 uvicorn app.main:app --reload --port 8000
 # Docs: http://localhost:8000/docs
@@ -114,6 +118,7 @@ python manage.py runserver
 ```
 
 **settings.py key additions**:
+
 ```python
 INSTALLED_APPS = [
     ...
@@ -142,6 +147,7 @@ CORS_ALLOWED_ORIGINS = ['http://localhost:3000']
 ```
 
 **ViewSet**:
+
 ```python
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
@@ -173,6 +179,7 @@ npm install -D typescript @types/express @types/node ts-node nodemon
 ```
 
 **`src/index.ts`**:
+
 ```typescript
 import express from 'express'
 import cors from 'cors'
@@ -211,6 +218,7 @@ cd my-api && npm run start:dev
 ```
 
 **Module structure**:
+
 ```typescript
 // users/users.controller.ts
 import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common'
@@ -256,6 +264,7 @@ bun create hono my-app
 ```
 
 **`src/index.ts`**:
+
 ```typescript
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
@@ -287,6 +296,7 @@ export default app
 ```
 
 **Deploy to Cloudflare Workers**:
+
 ```bash
 wrangler deploy
 ```
@@ -304,41 +314,42 @@ go get github.com/gofiber/fiber/v2
 ```
 
 **`main.go`**:
+
 ```go
 package main
 
 import (
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/logger"
+ "github.com/gofiber/fiber/v2"
+ "github.com/gofiber/fiber/v2/middleware/cors"
+ "github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 func main() {
-	app := fiber.New()
+ app := fiber.New()
 
-	app.Use(logger.New())
-	app.Use(cors.New())
+ app.Use(logger.New())
+ app.Use(cors.New())
 
-	app.Get("/health", func(c *fiber.Ctx) error {
-		return c.JSON(fiber.Map{"status": "ok"})
-	})
+ app.Get("/health", func(c *fiber.Ctx) error {
+  return c.JSON(fiber.Map{"status": "ok"})
+ })
 
-	app.Get("/users", getUsers)
-	app.Post("/users", createUser)
+ app.Get("/users", getUsers)
+ app.Post("/users", createUser)
 
-	app.Listen(":8000")
+ app.Listen(":8000")
 }
 
 func getUsers(c *fiber.Ctx) error {
-	return c.JSON([]map[string]string{{"name": "Alice"}})
+ return c.JSON([]map[string]string{{"name": "Alice"}})
 }
 
 func createUser(c *fiber.Ctx) error {
-	var body map[string]string
-	if err := c.BodyParser(&body); err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
-	}
-	return c.Status(201).JSON(body)
+ var body map[string]string
+ if err := c.BodyParser(&body); err != nil {
+  return c.Status(400).JSON(fiber.Map{"error": err.Error()})
+ }
+ return c.Status(201).JSON(body)
 }
 ```
 
@@ -445,6 +456,7 @@ pip install authlib      # Python
 ```
 
 ### Docker for any backend
+
 ```dockerfile
 # FastAPI
 FROM python:3.12-slim

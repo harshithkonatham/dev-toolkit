@@ -441,6 +441,7 @@ GitHub Copilot provides AI-powered code suggestions directly in the editor.
 ```
 
 **Key features:**
+
 - **Inline suggestions** - Tab to accept, `Esc` to dismiss
 - **Copilot Chat** - `Cmd+I` for inline chat, `Cmd+Shift+I` for Chat panel
 - **Code explanation** - Select code, ask "Explain this"
@@ -467,6 +468,7 @@ claude "refactor this function for readability"
 ```
 
 **Key capabilities:**
+
 - Full codebase understanding via file reading and search
 - Multi-file editing with precise diffs
 - Terminal command execution for builds and tests

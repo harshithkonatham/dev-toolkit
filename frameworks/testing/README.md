@@ -13,6 +13,7 @@ npm install -D vitest @vitest/ui happy-dom @testing-library/react
 ```
 
 **`vitest.config.ts`**:
+
 ```typescript
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
@@ -32,6 +33,7 @@ export default defineConfig({
 ```
 
 **Writing tests**:
+
 ```typescript
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
@@ -78,6 +80,7 @@ npx playwright install
 ```
 
 **`playwright.config.ts`**:
+
 ```typescript
 import { defineConfig, devices } from '@playwright/test'
 
@@ -103,6 +106,7 @@ export default defineConfig({
 ```
 
 **Writing E2E tests**:
+
 ```typescript
 import { test, expect } from '@playwright/test'
 
@@ -192,6 +196,7 @@ pip install pytest pytest-asyncio httpx pytest-cov
 ```
 
 **`tests/test_users.py`**:
+
 ```python
 import pytest
 from httpx import AsyncClient
@@ -221,6 +226,7 @@ async def test_not_found(client):
 ```
 
 **`pytest.ini`**:
+
 ```ini
 [pytest]
 asyncio_mode = auto
@@ -240,6 +246,7 @@ pytest --cov --cov-report=html   # with HTML coverage
 ## Testing Best Practices
 
 ### Test pyramid
+
 ```
          /\
         /E2E\         — Few, slow, full-system (Playwright)
@@ -251,6 +258,7 @@ pytest --cov --cov-report=html   # with HTML coverage
 ```
 
 ### Testing checklist
+
 - [ ] Happy path works
 - [ ] Error cases handled (400, 404, 500)
 - [ ] Auth/permissions enforced
@@ -259,6 +267,7 @@ pytest --cov --cov-report=html   # with HTML coverage
 - [ ] Accessibility (ARIA roles, keyboard nav)
 
 ### Mock strategies
+
 ```typescript
 // Mock a module
 vi.mock('@/lib/db', () => ({
@@ -278,6 +287,7 @@ vi.useRealTimers()
 ```
 
 ### CI configuration
+
 ```yaml
 # .github/workflows/test.yml
 name: Tests

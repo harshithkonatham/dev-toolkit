@@ -36,11 +36,13 @@ Amazon Web Services (AWS) is the world's most comprehensive and widely adopted c
 ### Installation
 
 **macOS:**
+
 ```bash
 brew install awscli
 ```
 
 **Linux:**
+
 ```bash
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
@@ -48,6 +50,7 @@ sudo ./aws/install
 ```
 
 **Windows:**
+
 ```powershell
 msiexec.exe /i https://awscli.amazonaws.com/AWSCLIV2.msi
 ```
@@ -151,6 +154,7 @@ Storage classes:
 ### VPC (Virtual Private Cloud)
 
 Typical VPC architecture:
+
 ```
 VPC (10.0.0.0/16)
 ├── Public Subnet (10.0.1.0/24) - AZ a

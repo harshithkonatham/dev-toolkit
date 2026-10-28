@@ -19,6 +19,7 @@ This file provides a quick-comparison matrix of tools and intended use cases.
 | ELK | Logs + search | Powerful query insights | `helm install elasticsearch` | Use Beats and arteries for ingestion.
 
 ## Recommended starter workflow
+
 1. Infrastructure provisioning with Terraform.
 2. Config + environment bootstrap with Ansible.
 3. Container build with Docker/Podman and deploy to Kubernetes.
@@ -27,6 +28,7 @@ This file provides a quick-comparison matrix of tools and intended use cases.
 6. Manage secrets in Vault.
 
 ## Workload security focus
+
 - Enforce least privilege RBAC across clusters and CI.
 - Scan images with Trivy/Grype in both CI and registry lifecycles.
 - Use network policies in Kubernetes.

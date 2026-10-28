@@ -30,7 +30,7 @@ frameworks/
 | [Mobile](#mobile) | React Native 0.77, Flutter 3.29, Expo SDK 52 |
 | [AI/ML](#aiml) | LangChain, LlamaIndex, PyTorch 2.6, Hugging Face |
 | [CSS/UI](#cssui) | Tailwind CSS 4, shadcn/ui, Radix UI, DaisyUI |
-| [Full-Stack](#fullstack) | T3 Stack, Remix, SvelteKit, RedwoodJS |
+| [Full-Stack](#full-stack) | T3 Stack, Remix, SvelteKit, RedwoodJS |
 | [Testing](#testing) | Vitest, Playwright, Cypress, pytest |
 | [Databases/ORM](#databasesorm) | Prisma, Drizzle ORM, SQLAlchemy |
 
