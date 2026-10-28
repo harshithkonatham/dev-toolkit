@@ -22,7 +22,7 @@ from payments_api import __version__, cards
 from payments_api.auth import READ_SCOPE, WRITE_SCOPE, Principal, require_scope
 from payments_api.config import Settings
 from payments_api.db import IdempotencyConflictError, NewTransaction, Repository
-from payments_api.events import LogPublisher, Publisher, relay_outbox
+from payments_api.events import Publisher, publisher_from_settings, relay_outbox
 from payments_api.models import Status, Transaction, TransactionCreate, TransactionList
 from payments_api.observability import (
     BodySizeLimitMiddleware,
@@ -73,7 +73,7 @@ def create_app(settings: Settings | None = None, publisher: Publisher | None = N
     configure_logging(settings.log_level)
     repo = Repository(settings.database_path)
     metrics = Metrics()
-    event_publisher = publisher or LogPublisher()
+    event_publisher = publisher or publisher_from_settings(settings)
 
     @asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncIterator[None]:
@@ -88,6 +88,9 @@ def create_app(settings: Settings | None = None, publisher: Publisher | None = N
             task.cancel()
             with suppress(asyncio.CancelledError):
                 await task
+        close = getattr(event_publisher, "close", None)
+        if callable(close):
+            close()
 
     app = FastAPI(
         title="Payments API",
