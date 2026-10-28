@@ -1,0 +1,142 @@
+# AI-Powered PR Review Workflow
+# Automatically triggers Claude to review PRs and post feedback as a review
+
+name: AI PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    # Only run on PRs with code changes (not docs-only)
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+
+jobs:
+  ai-review:
+    name: AI Code Review
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install reviewer
+        run: pip install anthropic requests
+
+      - name: Run AI Code Review
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python - <<'EOF'
+          import os, json, requests, anthropic
+
+          client = anthropic.Anthropic()
+          gh_token = os.environ["GITHUB_TOKEN"]
+          repo = os.environ["GITHUB_REPOSITORY"]
+          pr_number = int(os.environ["GITHUB_REF"].split("/")[2])
+
+          headers = {"Authorization": f"token {gh_token}", "Accept": "application/vnd.github.v3+json"}
+          diff_headers = {**headers, "Accept": "application/vnd.github.v3.diff"}
+
+          # Get diff
+          diff_resp = requests.get(f"https://api.github.com/repos/{repo}/pulls/{pr_number}", headers=diff_headers)
+          diff = diff_resp.text[:60000]  # Truncate for context limits
+
+          # Get PR info
+          pr_resp = requests.get(f"https://api.github.com/repos/{repo}/pulls/{pr_number}", headers=headers)
+          pr = pr_resp.json()
+
+          # Review with Claude
+          msg = client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=2048,
+            system="""You are an expert code reviewer. Review the PR diff and provide:
+          1. Overall assessment (APPROVE/REQUEST_CHANGES/COMMENT)
+          2. Security issues (critical first)
+          3. Performance concerns
+          4. Best practice violations
+          5. What's done well
+
+          Keep feedback constructive and specific. Format as markdown.""",
+            messages=[{
+              "role": "user",
+              "content": f"PR: {pr['title']}\n\nDescription: {pr.get('body', 'None')}\n\nDiff:\n```diff\n{diff}\n```"
+            }]
+          )
+
+          review_body = f"## 🤖 AI Code Review\n\n{msg.content[0].text}\n\n---\n*Powered by Claude. Human review required before merging.*"
+
+          # Determine event from review
+          text_lower = msg.content[0].text.lower()
+          event = "REQUEST_CHANGES" if "critical" in text_lower or "security vulnerability" in text_lower else "COMMENT"
+
+          # Post review
+          requests.post(
+            f"https://api.github.com/repos/{repo}/pulls/{pr_number}/reviews",
+            headers=headers,
+            json={"body": review_body, "event": event}
+          )
+
+          print(f"Review posted with event: {event}")
+          EOF
+
+  # Optional: AI-generated PR summary for Slack
+  pr-summary:
+    name: Post PR Summary to Slack
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate and post PR summary
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          pip install anthropic requests -q
+
+          python - <<'EOF'
+          import os, requests, anthropic
+
+          client = anthropic.Anthropic()
+          pr_title = os.environ.get("PR_TITLE", "")
+          pr_body = os.environ.get("PR_BODY", "")
+          pr_url = os.environ.get("PR_URL", "")
+          pr_author = os.environ.get("PR_AUTHOR", "")
+
+          msg = client.messages.create(
+            model="claude-haiku-4-5-20251001",  # Fast + cheap for summaries
+            max_tokens=256,
+            messages=[{
+              "role": "user",
+              "content": f"Summarize this PR in 2 sentences for a Slack notification. Be specific about what changed and why.\n\nTitle: {pr_title}\n\nDescription: {pr_body}"
+            }]
+          )
+
+          summary = msg.content[0].text
+          slack_msg = {
+            "blocks": [
+              {"type": "header", "text": {"type": "plain_text", "text": f"📬 New PR: {pr_title}"}},
+              {"type": "section", "text": {"type": "mrkdwn", "text": f"*Author:* {pr_author}\n*Summary:* {summary}"}},
+              {"type": "actions", "elements": [{"type": "button", "text": {"type": "plain_text", "text": "Review PR"}, "url": pr_url}]}
+            ]
+          }
+
+          requests.post(os.environ["SLACK_WEBHOOK_URL"], json=slack_msg)
+          print("Slack notification sent")
+          EOF
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}

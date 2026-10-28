@@ -1,0 +1,291 @@
+# Complete CI/CD Pipeline with Security Scanning + AI Review
+# Triggers on PR and push to main
+# Stages: lint → test → security → build → deploy
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # ─────────────────────────────────────────
+  # STAGE 1: Code Quality
+  # ─────────────────────────────────────────
+  quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install ruff mypy pytest
+
+      - name: Lint with Ruff
+        run: ruff check . --output-format=github
+
+      - name: Type check
+        run: mypy . --ignore-missing-imports
+
+      - name: Check formatting
+        run: ruff format --check .
+
+  # ─────────────────────────────────────────
+  # STAGE 2: Tests
+  # ─────────────────────────────────────────
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    needs: quality
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: testdb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Run tests with coverage
+        env:
+          DATABASE_URL: postgresql://postgres:test@localhost:5432/testdb
+        run: |
+          pytest --cov=. --cov-report=xml --cov-report=term \
+            --junitxml=test-results.xml -v
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: coverage.xml
+          fail_ci_if_error: false
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: test-results.xml
+
+  # ─────────────────────────────────────────
+  # STAGE 3: Security Scanning
+  # ─────────────────────────────────────────
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: quality
+    permissions:
+      security-events: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for secret scanning
+
+      - name: Secret scanning with Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: SAST with Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/python
+            p/owasp-top-ten
+          publishToken: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+      - name: Dependency vulnerability scan
+        run: |
+          pip install safety
+          safety check --json -r requirements.txt > safety-report.json || true
+          cat safety-report.json
+
+      - name: Upload SARIF results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: semgrep.sarif
+
+  # ─────────────────────────────────────────
+  # STAGE 4: Build & Push Image
+  # ─────────────────────────────────────────
+  build:
+    name: Build Image
+    runs-on: ubuntu-latest
+    needs: [test, security]
+    if: github.ref == 'refs/heads/main'
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+      image-digest: ${{ steps.build.outputs.digest }}
+
+    permissions:
+      contents: read
+      packages: write
+      id-token: write  # For OIDC signing with Cosign
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix={{branch}}-
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+          provenance: true
+          sbom: true  # Generate SBOM automatically
+
+      - name: Scan image for vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
+          format: sarif
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH
+          exit-code: 1  # Fail on critical/high vulns
+
+      - name: Sign image with Cosign (supply chain security)
+        uses: sigstore/cosign-installer@v3
+      - run: |
+          cosign sign --yes ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}
+
+  # ─────────────────────────────────────────
+  # STAGE 5: Deploy to Staging
+  # ─────────────────────────────────────────
+  deploy-staging:
+    name: Deploy → Staging
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: staging
+      url: https://staging.your-app.com
+    concurrency:
+      group: staging-deploy
+      cancel-in-progress: false
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: your-org/k8s-config
+          token: ${{ secrets.PLATFORM_TOKEN }}
+
+      - name: Update image tag in staging manifests
+        run: |
+          cd apps/${{ github.event.repository.name }}/staging
+          # Update kustomization.yaml or values.yaml
+          sed -i "s|image:.*|image: ${{ needs.build.outputs.image-tag }}|g" deployment.yaml
+          git config --global user.email "ci@your-org.com"
+          git config --global user.name "CI Bot"
+          git add .
+          git commit -m "chore: update ${{ github.event.repository.name }} staging to ${{ github.sha }}"
+          git push
+
+      # ArgoCD will auto-sync from this commit
+
+      - name: Wait for ArgoCD sync
+        run: |
+          # Poll ArgoCD API until app is synced/healthy
+          for i in {1..30}; do
+            STATUS=$(argocd app get ${{ github.event.repository.name }}-staging \
+              --output json | jq -r '.status.health.status')
+            if [ "$STATUS" = "Healthy" ]; then
+              echo "Deployment successful!"
+              exit 0
+            fi
+            echo "Waiting... ($i/30) Status: $STATUS"
+            sleep 10
+          done
+          echo "Deployment timed out"
+          exit 1
+
+  # ─────────────────────────────────────────
+  # STAGE 6: Deploy to Production
+  # ─────────────────────────────────────────
+  deploy-production:
+    name: Deploy → Production
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+    environment:
+      name: production
+      url: https://your-app.com
+    # Requires manual approval via GitHub environment protection rules
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: your-org/k8s-config
+          token: ${{ secrets.PLATFORM_TOKEN }}
+
+      - name: Update image tag in production manifests
+        run: |
+          cd apps/${{ github.event.repository.name }}/production
+          sed -i "s|image:.*|image: ${{ needs.build.outputs.image-tag }}|g" deployment.yaml
+          git add .
+          git commit -m "chore: deploy ${{ github.event.repository.name }} ${{ github.sha }} to production"
+          git push
+
+      - name: Notify Slack
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "🚀 *${{ github.event.repository.name }}* deployed to production\n• Commit: ${{ github.sha }}\n• Author: ${{ github.actor }}\n• <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View pipeline>"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

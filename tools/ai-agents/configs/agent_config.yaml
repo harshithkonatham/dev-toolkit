@@ -1,0 +1,119 @@
+# AI Agents Configuration
+# Copy to .env or reference in scripts
+
+# ─────────────────────────────
+# LLM Backends
+# ─────────────────────────────
+llm:
+  default: anthropic
+
+  anthropic:
+    model: claude-sonnet-4-6          # Default model
+    model_fast: claude-haiku-4-5-20251001  # For high-volume, low-complexity tasks
+    model_powerful: claude-opus-4-6    # For P1 incidents and complex analysis
+    max_tokens: 4096
+    temperature: 0.1                   # Low temperature for consistent outputs
+
+  ollama:
+    base_url: http://localhost:11434
+    model: qwen2.5-coder:32b          # Local model, no data leaves machine
+    model_small: phi4:14b
+
+  openai:
+    model: gpt-4o
+    model_fast: gpt-4o-mini
+
+# ─────────────────────────────
+# Agent Behaviors
+# ─────────────────────────────
+agents:
+  code_reviewer:
+    enabled: true
+    model: anthropic/claude-sonnet-4-6
+    trigger: pull_request             # github_webhook | cron | manual
+    post_to_github: true
+    severity_threshold: major         # Only post if issues >= this severity
+    auto_approve_if_no_issues: false  # Safety: never auto-approve
+
+  incident_responder:
+    enabled: true
+    model: anthropic/claude-opus-4-6  # Use best model for critical incidents
+    trigger: webhook
+    webhook_port: 8080
+    post_to_slack: true
+    auto_page: false                  # Safety: never auto-page without human confirmation
+    severity_to_page: P1
+
+  pr_summarizer:
+    enabled: true
+    model: anthropic/claude-haiku-4-5-20251001
+    trigger: github_merge
+    post_to_slack: true
+    channel: "#releases"
+
+  log_analyzer:
+    enabled: true
+    model: anthropic/claude-sonnet-4-6
+    trigger: cron
+    schedule: "*/15 * * * *"         # Every 15 minutes
+    lookback_minutes: 15
+    error_threshold: 100             # Alert if >100 errors in window
+
+# ─────────────────────────────
+# Integrations
+# ─────────────────────────────
+integrations:
+  github:
+    token_env: GITHUB_TOKEN
+    org: your-org
+
+  slack:
+    webhook_env: SLACK_WEBHOOK_URL
+    channels:
+      incidents: "#incidents"
+      releases: "#releases"
+      security: "#security-alerts"
+
+  jira:
+    base_url: https://your-org.atlassian.net
+    token_env: JIRA_TOKEN
+    project: OPS
+    auto_create_tickets: false        # Require human to create tickets
+
+  pagerduty:
+    token_env: PAGERDUTY_TOKEN
+    service_id: PXXXXXX
+
+  datadog:
+    api_key_env: DD_API_KEY
+    app_key_env: DD_APP_KEY
+    site: datadoghq.com
+
+# ─────────────────────────────
+# Safety & Rate Limits
+# ─────────────────────────────
+safety:
+  max_api_calls_per_hour: 100
+  max_cost_per_day_usd: 10.00
+  dry_run_mode: false                 # Set true to test without external calls
+  require_human_approval:
+    - auto_merge
+    - create_jira_ticket
+    - send_page
+    - modify_infrastructure
+
+  blocked_actions:
+    - delete_resources
+    - force_push
+    - disable_alerts
+
+# ─────────────────────────────
+# Logging
+# ─────────────────────────────
+logging:
+  level: INFO
+  format: json
+  output: stdout
+  file: /var/log/ai-agents/agent.log
+  include_llm_prompts: false          # Set true for debugging (verbose)
+  retention_days: 30

@@ -1,0 +1,96 @@
+# catalog-info.yaml
+# Place this file in the root of any repository to register it in Backstage.
+# See: https://backstage.io/docs/features/software-catalog/descriptor-format
+
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: payment-service
+  title: Payment Service
+  description: Handles all payment processing, refunds, and billing operations
+
+  annotations:
+    # GitHub integration — auto-links to repo
+    github.com/project-slug: your-org/payment-service
+
+    # TechDocs — renders docs from /docs folder
+    backstage.io/techdocs-ref: dir:.
+
+    # Link to CI/CD
+    github.com/workflows: .github/workflows/ci.yml
+
+    # PagerDuty on-call integration
+    pagerduty.com/service-id: PXXXXXX
+
+    # Datadog dashboard
+    datadoghq.com/dashboard-url: https://app.datadoghq.com/dashboard/xxx
+
+    # Kubernetes
+    backstage.io/kubernetes-id: payment-service
+    backstage.io/kubernetes-namespace: production
+
+  tags:
+    - payments
+    - critical
+    - tier-1
+
+  links:
+    - url: https://runbooks.internal/payment-service
+      title: Runbook
+      icon: book
+    - url: https://grafana.internal/d/payment-service
+      title: Grafana Dashboard
+      icon: dashboard
+
+spec:
+  type: service
+  lifecycle: production
+  owner: team-payments
+  system: billing-platform
+
+  # What this service depends on
+  dependsOn:
+    - component:default/postgres-primary
+    - component:default/redis-cache
+    - component:default/stripe-api
+    - resource:default/payments-db
+
+  # What this service provides
+  providesApis:
+    - payment-api-v2
+
+---
+# API definition
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: payment-api-v2
+  description: Payment processing REST API
+  tags:
+    - rest
+    - payments
+spec:
+  type: openapi
+  lifecycle: production
+  owner: team-payments
+  definition:
+    $text: ./openapi.yaml
+
+---
+# Team definition
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: team-payments
+  description: Payments and Billing team
+spec:
+  type: team
+  profile:
+    displayName: Payments Team
+    email: payments@company.com
+  parent: engineering
+  children: []
+  members:
+    - alice
+    - bob
+    - charlie

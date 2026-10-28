@@ -1,0 +1,171 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# nmap_profiles.txt — Nmap Scan Profile Reference
+# Copy-paste ready commands for common scenarios
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Quick Scans ───────────────────────────────────────────────────────────────
+
+# Top 1000 ports, version + default scripts (most common)
+nmap -sV -sC -T4 --open -oA quick_scan <TARGET>
+
+# Fast ping sweep (host discovery only)
+nmap -sn -T4 <SUBNET>
+
+# Top 100 ports only
+nmap -F -T4 <TARGET>
+
+# ── Full Scans ────────────────────────────────────────────────────────────────
+
+# All 65535 ports (slow but thorough)
+nmap -p- -T4 --min-rate=1000 --open -oA full_scan <TARGET>
+
+# All ports + version + scripts + OS detection
+nmap -p- -sV -sC -O -T4 --open -oA full_aggressive <TARGET>
+
+# Two-phase: discover open ports, then detail
+nmap -p- -T4 --min-rate=5000 -oG open_ports.gnmap <TARGET>
+# Extract ports:
+# grep "Ports:" open_ports.gnmap | grep -oP '\d+/open' | cut -d/ -f1 | tr '\n' ','
+# Then:
+nmap -p <PORTS> -sV -sC -O -oA detailed_scan <TARGET>
+
+# ── Stealth / Evasion ─────────────────────────────────────────────────────────
+
+# SYN stealth scan (requires root)
+sudo nmap -sS -p- -T2 --open <TARGET>
+
+# Decoy scan (mix real scan with fake IPs)
+sudo nmap -sS -D RND:10 <TARGET>
+
+# Idle/zombie scan (completely stealthy, requires zombie host)
+sudo nmap -sI <ZOMBIE_IP>:<PORT> <TARGET>
+
+# Fragment packets (evade firewalls)
+sudo nmap -f -sS <TARGET>
+
+# Randomize host order
+nmap --randomize-hosts -iL targets.txt
+
+# Slow scan (evade rate-based IDS)
+nmap -T1 -p 80,443,22 <TARGET>
+
+# Change source port
+nmap --source-port 53 <TARGET>
+
+# ── Service Detection ─────────────────────────────────────────────────────────
+
+# Version detection (intensity 0-9)
+nmap -sV --version-intensity 9 <TARGET>
+
+# Banner grabbing
+nmap -sV -sC -p- <TARGET>
+
+# HTTP specific
+nmap -p 80,443,8080,8443,8000 -sV --open \
+     --script=http-title,http-headers,http-methods,http-robots.txt,ssl-cert \
+     <TARGET>
+
+# ── Vulnerability Scanning ────────────────────────────────────────────────────
+
+# Default vuln scripts
+nmap --script=vuln <TARGET>
+
+# Safe vuln scan (no destructive)
+nmap --script="not intrusive" <TARGET>
+
+# Specific CVEs
+nmap --script=http-shellshock <TARGET>            # CVE-2014-6271
+nmap --script=smb-vuln-ms17-010 -p 445 <TARGET>  # EternalBlue
+nmap --script=rdp-vuln-ms12-020 -p 3389 <TARGET>
+
+# ── Protocol-Specific ─────────────────────────────────────────────────────────
+
+# FTP
+nmap -p 21 --script=ftp-anon,ftp-syst,ftp-bounce <TARGET>
+
+# SSH
+nmap -p 22 --script=ssh-auth-methods,ssh-hostkey,ssh2-enum-algos <TARGET>
+
+# HTTP
+nmap -p 80,443 --script=http-auth-finder,http-default-accounts \
+     --script=http-put,http-trace,http-backup-finder <TARGET>
+
+# SMB
+nmap -p 139,445 --script=smb-os-discovery,smb-enum-shares,smb-enum-users \
+     --script=smb-security-mode,smb2-security-mode \
+     --script=smb-vuln-ms17-010,smb-vuln-ms08-067 <TARGET>
+
+# SNMP (UDP)
+sudo nmap -sU -p 161 --script=snmp-info,snmp-sysdescr,snmp-processes <TARGET>
+
+# MySQL
+nmap -p 3306 --script=mysql-info,mysql-empty-password,mysql-databases <TARGET>
+
+# MongoDB
+nmap -p 27017 --script=mongodb-info,mongodb-databases <TARGET>
+
+# Redis
+nmap -p 6379 --script=redis-info <TARGET>
+
+# DNS
+nmap -p 53 --script=dns-brute,dns-nsid,dns-recursion,dns-zone-transfer <TARGET>
+
+# SSL/TLS
+nmap -p 443 --script=ssl-cert,ssl-enum-ciphers,ssl-heartbleed,\
+ssl-poodle,ssl-dh-params,ssl-ccs-injection <TARGET>
+
+# LDAP
+nmap -p 389,636 --script=ldap-rootdse,ldap-search \
+     --script-args 'ldap.username="",ldap.password=""' <TARGET>
+
+# ── Network Discovery ─────────────────────────────────────────────────────────
+
+# ARP scan (local network, fast)
+sudo nmap -sn -PR 192.168.1.0/24
+
+# Ping sweep (ICMP)
+nmap -sn -PE 192.168.1.0/24
+
+# TCP SYN discovery
+nmap -sn -PS22,80,443 192.168.1.0/24
+
+# UDP discovery
+nmap -sn -PU53,67,68,161 192.168.1.0/24
+
+# ── Output Formats ────────────────────────────────────────────────────────────
+
+# All formats at once
+nmap -oA scan_results <TARGET>
+# Generates: scan_results.nmap, scan_results.xml, scan_results.gnmap
+
+# Parse XML with Python:
+# python3 -c "import xml.etree.ElementTree as ET; tree = ET.parse('scan_results.xml'); [print(h.get('addr'), h.find('.//port[@portid]').get('portid') if h.find('.//port[@portid]') else '') for h in tree.findall('.//host')]"
+
+# Human readable
+nmap -oN scan_results.txt <TARGET>
+
+# Grepable
+nmap -oG scan_results.gnmap <TARGET>
+
+# ── NSE Script Categories ─────────────────────────────────────────────────────
+# auth          — authentication bypass/brute force
+# broadcast     — network broadcast discovery
+# brute         — brute force authentication
+# default       — -sC safe default scripts
+# discovery     — service discovery
+# dos           — denial of service (use carefully)
+# exploit       — exploits vulnerabilities
+# external      — uses external resources (CAUTION: sends data out)
+# fuzzer        — fuzzing
+# intrusive     — potentially disruptive (may crash services)
+# malware       — malware detection
+# safe          — non-intrusive scripts
+# version       — version detection
+# vuln          — vulnerability detection
+
+# Run safe scripts only:
+nmap --script=safe <TARGET>
+
+# Run specific category:
+nmap --script=auth <TARGET>
+nmap --script=default,vuln <TARGET>

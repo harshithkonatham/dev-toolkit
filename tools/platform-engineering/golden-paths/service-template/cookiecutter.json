@@ -1,0 +1,20 @@
+{
+  "service_name": "my-service",
+  "service_description": "A brief description of this service",
+  "team_name": "platform",
+  "language": ["python", "typescript", "go", "java"],
+  "framework": {
+    "python": ["fastapi", "django", "flask"],
+    "typescript": ["nestjs", "express", "hono"],
+    "go": ["gin", "fiber", "chi"],
+    "java": ["spring-boot", "quarkus"]
+  },
+  "database": ["none", "postgres", "mysql", "mongodb", "dynamodb"],
+  "cache": ["none", "redis", "memcached"],
+  "message_queue": ["none", "kafka", "sqs", "nats"],
+  "deploy_target": ["kubernetes", "ecs", "lambda", "cloud-run"],
+  "cloud_provider": ["aws", "gcp", "azure"],
+  "monitoring": ["datadog", "prometheus", "newrelic"],
+  "year": "2026",
+  "author": "Platform Engineering Team"
+}

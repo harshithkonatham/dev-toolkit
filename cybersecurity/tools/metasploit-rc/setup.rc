@@ -1,0 +1,15 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# setup.rc — Metasploit Resource Script: Initial Setup
+# Usage: msfconsole -r setup.rc
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Set global options
+setg LHOST 10.0.0.1
+setg LPORT 4444
+setg RHOSTS 192.168.1.0/24
+
+# Update
+db_status
+workspace -a pentest
+
+spool /tmp/msf_session.log
