@@ -1,4 +1,4 @@
-# ak-dev-toolkit
+# dev-toolkit
 
 A consolidated repository containing development tools, setup guides, frameworks, Dockerfiles, and learning resources.
 Updated: April 2026.

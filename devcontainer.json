@@ -1,5 +1,5 @@
 {
-    "name": "AK Dev Toolkit Environment",
+    "name": "Dev Toolkit Environment",
     "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
     "features": {
         "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
