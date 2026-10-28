@@ -63,6 +63,12 @@ With Docker: `make docker-build docker-run`.
 | Supply chain | `uv.lock` with hashes and a wheels-only install. Base images pinned by digest, Actions pinned by commit SHA. SBOM generated on every build. Dependabot proposes updates only after a release is 7 days old. | [`pyproject.toml`](pyproject.toml), [`Dockerfile`](Dockerfile), [workflow](../../.github/workflows/payments-api.yml) |
 | Container and cluster | Non-root user (UID 10001), read-only root filesystem, all capabilities dropped, seccomp `RuntimeDefault`, no service-account token, restricted Pod Security Standard, default-deny NetworkPolicy. | [`deploy/k8s`](deploy/k8s) |
 
+## Compliance
+
+[`docs/pci-dss.md`](docs/pci-dss.md) maps PCI DSS v4.0 requirements (1–4, 6–8,
+10–12) to the controls above, with a file, test or CI job as evidence for each,
+and lists the known gaps.
+
 ## Pipeline
 
 [`.github/workflows/payments-api.yml`](../../.github/workflows/payments-api.yml)
