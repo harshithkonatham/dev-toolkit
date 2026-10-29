@@ -26,7 +26,7 @@ This folder contains curated DevOps tooling guidance, installation instructions,
 
 ```bash
 # Clone repo
-git clone https://github.com/harshithkonatham/dev-toolkit.git
+git clone https://github.com/harshithkonatham/devops-ai-toolkit.git
 cd dev-toolkit/tools/devops
 
 # Read the master guide

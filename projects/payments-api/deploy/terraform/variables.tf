@@ -18,7 +18,7 @@ variable "region" {
 variable "github_repository" {
   description = "GitHub repository (owner/name) whose main branch may push images."
   type        = string
-  default     = "harshithkonatham/dev-toolkit"
+  default     = "harshithkonatham/devops-ai-toolkit"
 
   validation {
     condition     = can(regex("^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$", var.github_repository))

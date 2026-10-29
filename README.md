@@ -3,8 +3,8 @@
 A consolidated repository containing development tools, setup guides, frameworks, Dockerfiles, and learning resources.
 Updated: April 2026.
 
-[![Toolkit CI](https://github.com/harshithkonatham/dev-toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/harshithkonatham/dev-toolkit/actions/workflows/ci.yml)
-[![payments-api](https://github.com/harshithkonatham/dev-toolkit/actions/workflows/payments-api.yml/badge.svg)](https://github.com/harshithkonatham/dev-toolkit/actions/workflows/payments-api.yml)
+[![Toolkit CI](https://github.com/harshithkonatham/devops-ai-toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/harshithkonatham/devops-ai-toolkit/actions/workflows/ci.yml)
+[![payments-api](https://github.com/harshithkonatham/devops-ai-toolkit/actions/workflows/payments-api.yml/badge.svg)](https://github.com/harshithkonatham/devops-ai-toolkit/actions/workflows/payments-api.yml)
 
 ## Featured: Payments API (DevSecOps reference project)
 

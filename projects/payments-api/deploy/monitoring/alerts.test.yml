@@ -23,7 +23,7 @@ tests:
               instance: api:8000
             exp_annotations:
               summary: "Payments API target api:8000 is down"
-              runbook_url: "https://github.com/harshithkonatham/dev-toolkit/blob/main/projects/payments-api/deploy/monitoring/RUNBOOK.md#paymentsapidown"
+              runbook_url: "https://github.com/harshithkonatham/devops-ai-toolkit/blob/main/projects/payments-api/deploy/monitoring/RUNBOOK.md#paymentsapidown"
 
   - name: 10% server errors pages after 5 minutes
     interval: 1m
@@ -40,7 +40,7 @@ tests:
               severity: page
             exp_annotations:
               summary: "10% of payment API requests are failing (5xx)"
-              runbook_url: "https://github.com/harshithkonatham/dev-toolkit/blob/main/projects/payments-api/deploy/monitoring/RUNBOOK.md#paymentshigherrorrate"
+              runbook_url: "https://github.com/harshithkonatham/devops-ai-toolkit/blob/main/projects/payments-api/deploy/monitoring/RUNBOOK.md#paymentshigherrorrate"
 
   - name: a few errors at very low traffic do not page
     interval: 1m
@@ -91,7 +91,7 @@ tests:
               severity: ticket
             exp_annotations:
               summary: "40% of payments are being declined"
-              runbook_url: "https://github.com/harshithkonatham/dev-toolkit/blob/main/projects/payments-api/deploy/monitoring/RUNBOOK.md#paymentsdeclinespike"
+              runbook_url: "https://github.com/harshithkonatham/devops-ai-toolkit/blob/main/projects/payments-api/deploy/monitoring/RUNBOOK.md#paymentsdeclinespike"
 
   - name: slow payment creation opens a ticket
     interval: 1m
@@ -113,7 +113,7 @@ tests:
               severity: ticket
             exp_annotations:
               summary: "p95 latency for creating a payment is 975ms"
-              runbook_url: "https://github.com/harshithkonatham/dev-toolkit/blob/main/projects/payments-api/deploy/monitoring/RUNBOOK.md#paymentsslowcreate"
+              runbook_url: "https://github.com/harshithkonatham/devops-ai-toolkit/blob/main/projects/payments-api/deploy/monitoring/RUNBOOK.md#paymentsslowcreate"
 
   - name: sustained auth failures raise a security ticket
     interval: 1m
@@ -129,4 +129,4 @@ tests:
               category: security
             exp_annotations:
               summary: "Sustained 401/403 responses (5.0/s): possible credential stuffing or a broken client"
-              runbook_url: "https://github.com/harshithkonatham/dev-toolkit/blob/main/projects/payments-api/deploy/monitoring/RUNBOOK.md#paymentsauthfailures"
+              runbook_url: "https://github.com/harshithkonatham/devops-ai-toolkit/blob/main/projects/payments-api/deploy/monitoring/RUNBOOK.md#paymentsauthfailures"
