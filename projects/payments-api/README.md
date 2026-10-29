@@ -1,6 +1,6 @@
 # Payments API
 
-[![payments-api](https://github.com/harshithkonatham/dev-toolkit/actions/workflows/payments-api.yml/badge.svg)](https://github.com/harshithkonatham/dev-toolkit/actions/workflows/payments-api.yml)
+[![payments-api](https://github.com/harshithkonatham/devops-ai-toolkit/actions/workflows/payments-api.yml/badge.svg)](https://github.com/harshithkonatham/devops-ai-toolkit/actions/workflows/payments-api.yml)
 
 A small card-transactions service built to show a secure software lifecycle end
 to end: validated input, token auth, card data that never touches storage or

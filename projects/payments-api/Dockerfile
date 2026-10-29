@@ -17,7 +17,7 @@ RUN --mount=from=uv,source=/uv,target=/usr/local/bin/uv \
 
 FROM python:3.14-slim@sha256:cd89c30eda26ee911a4611b18680086e0ea42e6f5f8cbe653d07fa7958c9cec8 AS runtime
 LABEL org.opencontainers.image.title="payments-api" \
-      org.opencontainers.image.source="https://github.com/harshithkonatham/dev-toolkit"
+      org.opencontainers.image.source="https://github.com/harshithkonatham/devops-ai-toolkit"
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
